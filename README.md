@@ -10,7 +10,7 @@ I'm trying to deploy this project to be acessible using github-pages, but this i
 
 ### My recomendations - Docker
 
-You should get docker installed to run this project, as it is set to install and configure everything for you automatically. Besides, in a virtualized environment, errors like "it works on my machine" can be avoidable. I made this to be really simple to just "enter and use" with no need for configuration. <!--fuck the history that was deleted-->
+You should get docker installed to run this project, as it is set to install and configure everything for you automatically. Besides, in a virtualized environment, errors like "it works on my machine" can be avoidable. I made this to be really simple to just "enter and use" with no need for configuration. <!--fuck the history that was deleted because of him-->
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/7/70/Docker_logo.png?20240428132226" alt="docker logo" width="300px"><br/>
 <a href="https://commons.wikimedia.org/wiki/File:Docker_logo.png">Docker, Inc.</a>, <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>, via Wikimedia Commons
