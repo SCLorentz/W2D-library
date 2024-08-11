@@ -2,10 +2,6 @@
 
 Have you ever played the google chrome dino game? This is my own version of it, developed in rust using the WASM (web assembly) technology.
 
-## Warn!
-
-I'm trying to deploy this project to be acessible using github-pages, but this is not completly working,the github-pages url won't work.
-
 ## Develop by your own
 
 ### My recomendations - Docker
