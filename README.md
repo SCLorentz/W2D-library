@@ -2,6 +2,16 @@
 
 Have you ever played the google chrome dino game? This is my own version of it, developed in rust using the WASM (web assembly) technology.
 
+## Try on your brower
+
+### URL
+
+You can open this project in your browser using: https://google-dino-game.vercel.app/.
+
+### Warn
+
+I'm still developing the vercel compatibility, so you may found some issues
+
 ## Develop by your own
 
 ### My recomendations - Docker
