@@ -39,7 +39,7 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           source: './public'  # Deploy all files from the root of your repository
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAGES }}
           branch: gh-pages  # Deploy to the 'gh-pages' branch
 
 # Optional: Configure a custom domain (if applicable)
