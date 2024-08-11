@@ -1,0 +1,32 @@
+[package]
+name = "chrome-dino-game"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <113468900+SCLorentz@users.noreply.github.com>"]
+description = "A chrome dino game clone made with JS and WASM"
+repository = "https://github.com/yourgithubusername/hello-wasm"
+
+[dependencies]
+futures = "0.3.30"
+wasm-bindgen = "0.2"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies.web-sys]
+version = "0.3.4"
+features = [
+  'Document',
+  'Element',
+  'HtmlElement',
+  'Node',
+  'Window',
+  'CanvasRenderingContext2d',
+  'HtmlCanvasElement',
+  'CanvasRenderingContext2d',
+  'HtmlImageElement',
+  'console',
+]
+
+[profile.release]
+lto = true

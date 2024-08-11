@@ -1,0 +1,9 @@
+name = "dino"
+version = "0.1.0"
+description = "A simple dino game written in rust and go"
+//
+author = "SCLorentz"
+author_email = "113468900+SCLorentz@users.noreply.github.com"
+url = "https://github.com/sclorentz/chrome-dino-game"
+//
+keywords = ["dino", "game", "wasm", "rust", "go"]
