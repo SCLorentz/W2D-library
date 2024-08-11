@@ -1,10 +1,20 @@
-# Chrome Dino Game
+<h1>
+  <img src="https://github.com/user-attachments/assets/b081cbb0-0d25-44c6-8dde-87fd111442a0" width="30px">
+  Chrome Dino Game
+</h1>
 
+By <a href="//commons.wikimedia.org/w/index.php?title=User:Carlosbaraza&amp;action=edit&amp;redlink=1" class="new" title="User:Carlosbaraza (page does not exist)">Carlos Baraza</a> - <span class="int-own-work" lang="en">Own work</span> / <a rel="nofollow" class="external free" href="https://github.com/carlosbaraza/web-assembly-logo">https://github.com/carlosbaraza/web-assembly-logo</a>, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" title="Creative Commons Zero, Public Domain Dedication">CC0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=56494100">Link</a>
+
+<hr>
 Have you ever played the google chrome dino game? This is my own version of it, developed in rust using the WASM (web assembly) technology.
 
-## Warn!
+## Try on your brower
 
-I'm trying to deploy this project to be acessible using github-pages, but this is not completly working,the github-pages url won't work.
+You can open this project in your browser using: https://google-dino-game.vercel.app/
+
+### Warn
+
+I'm still developing the vercel compatibility, so you may found some issues
 
 ## Develop by your own
 
