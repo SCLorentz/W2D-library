@@ -32,3 +32,6 @@ To start the server, use: `./run.sh`
 ![first_image](./screenshots/jump.webp)
 
 ![second_image](./screenshots/game-over.webp)
+
+## History
+I've a problem and needed to delete and create the repo again, so, the history of this repo before '11 ago 2024' was deleted.
