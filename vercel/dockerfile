@@ -1,0 +1,23 @@
+# Use a base image com Node.js (para wasm-pack) e Go
+FROM node:18-alpine
+
+# Instalar ferramentas
+RUN apk add --no-cache git make gcc musl-dev
+WORKDIR /app
+
+# Clonar o repositório
+COPY . .
+
+# Instalar Rust e wasm-pack
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+RUN rustup component add wasm
+RUN npm install -g wasm-pack
+
+# Instalar Go
+RUN curl -LO https://go.dev/dl/go1.20.linux-amd64.tar.gz \
+    && tar -xzf go1.20.linux-amd64.tar.gz -C /usr/local \
+    && rm go1.20.linux-amd64.tar.gz
+ENV PATH="/usr/local/go/bin:$PATH"
+
+# Executar o script de build
+CMD ["./build.sh"]
