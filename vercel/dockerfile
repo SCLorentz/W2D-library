@@ -2,6 +2,7 @@
 FROM node:18-alpine
 
 # Instalar ferramentas
+RUN echo "Installing tools..."
 RUN apk add --no-cache git make gcc musl-dev
 WORKDIR /app
 
@@ -9,16 +10,30 @@ WORKDIR /app
 COPY . .
 
 # Instalar Rust e wasm-pack
+RUN echo "Installing Rust..."
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 RUN rustup component add wasm
 RUN npm install -g wasm-pack
 RUN npm install -g wasm-opt
 
 # Instalar Go
+RUN echo "Installing Go..."
 RUN curl -LO https://go.dev/dl/go1.20.linux-amd64.tar.gz \
     && tar -xzf go1.20.linux-amd64.tar.gz -C /usr/local \
     && rm go1.20.linux-amd64.tar.gz
 ENV PATH="/usr/local/go/bin:$PATH"
 
 # Executar o script de build
-CMD ["./build.sh"]
+# rust wasm build
+RUN echo "Building rust..."
+RUN wasm-pack build --target web --out-dir ./public/script
+RUN wasm-opt -Os ./public/script/chrome_dino_game_bg.wasm -o ./public/script/chrome_dino_game_bg.wasm
+RUN echo "Done!"
+
+# go build
+RUN echo "Building server..."
+RUN o build -o dino
+
+# server startup
+RUN echo "Starting server..."
+RUN ./dino
