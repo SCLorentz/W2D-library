@@ -10,7 +10,7 @@ Have you ever played the google chrome dino game? This is my own version of it, 
 
 ## Try on your brower
 
-You can open this project in your browser using: https://google-dino-game.vercel.app/
+You can open this project in your browser using: https://google-dino-game.vercel.app/, but the vercel isn't configured to compile the wasm files, so for now, it isn't working
 
 ### Warn
 
@@ -39,6 +39,8 @@ Those are some stuff that I think that would be cool to add in this project
 * [ ]  Create a pause menu acessible with 'esc'
 * [ ]  Add multplayer compatibility
 
+I'm not using any libray, and this project is on a begginig stage, finishing this can take a long time
+
 ## History
 
-I had a problem and needed to delete and create the repo again, so the history of this repo before '11 ago 2024' was deleted, but this afectet just one week of progression.
+I had a problem and needed to delete and create the repo again, so the history of this repo before '11 ago 2024' was deleted, but this afected just one week of progression.
