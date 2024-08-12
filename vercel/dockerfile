@@ -12,9 +12,11 @@ COPY . .
 # Instalar Rust e wasm-pack
 RUN echo "Installing Rust..."
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/usr/local/cargo/bin:$PATH"
+# extras dependencies from rust
 RUN rustup component add wasm
-RUN npm install -g wasm-pack
-RUN npm install -g wasm-opt
+RUN cargo install -g wasm-pack
+RUN cargo install -g wasm-opt
 
 # Instalar Go
 RUN echo "Installing Go..."
@@ -24,16 +26,4 @@ RUN curl -LO https://go.dev/dl/go1.20.linux-amd64.tar.gz \
 ENV PATH="/usr/local/go/bin:$PATH"
 
 # Executar o script de build
-# rust wasm build
-RUN echo "Building rust..."
-RUN wasm-pack build --target web --out-dir ./public/script
-RUN wasm-opt -Os ./public/script/chrome_dino_game_bg.wasm -o ./public/script/chrome_dino_game_bg.wasm
-RUN echo "Done!"
-
-# go build
-RUN echo "Building server..."
-RUN o build -o dino
-
-# server startup
-RUN echo "Starting server..."
-RUN ./dino
+RUN ./run.sh
