@@ -34,3 +34,6 @@ RUN echo "Done!"
 # go build
 RUN echo "Building server..."
 RUN go build -o dino
+
+# server startup
+RUN ./dino
