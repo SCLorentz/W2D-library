@@ -43,4 +43,4 @@ I'm not using any libray, and this project is on a begginig stage, finishing thi
 
 ## History
 
-I had a problem and needed to delete and create the repo again, so the history of this repo before '11 ago 2024' was deleted, but this afectet just one week of progression.
+I had a problem and needed to delete and create the repo again, so the history of this repo before '11 ago 2024' was deleted, but this afected just one week of progression.
