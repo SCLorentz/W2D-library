@@ -24,3 +24,13 @@ RUN curl -LO https://go.dev/dl/go1.20.linux-amd64.tar.gz \
     && tar -xzf go1.20.linux-amd64.tar.gz -C /usr/local \
     && rm go1.20.linux-amd64.tar.gz
 ENV PATH="/usr/local/go/bin:$PATH"
+
+# rust wasm build
+RUN echo "Building rust..."
+RUN wasm-pack build --target web --out-dir ./public/script
+RUN wasm-opt -Os ./public/script/chrome_dino_game_bg.wasm -o ./public/script/chrome_dino_game_bg.wasm
+RUN echo "Done!"
+
+# go build
+RUN echo "Building server..."
+RUN go build -o dino
