@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 use std::f64;
 //use web_sys::console;
 use wasm_bindgen::closure::Closure;
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement};
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement, Window};
 use std::rc::Rc;
 
 
@@ -116,7 +116,8 @@ impl Sprite {
 #[derive(Clone)]
 struct CanvasFactory {
     context: CanvasRenderingContext2d,
-    canvas: HtmlCanvasElement,
+    element: HtmlCanvasElement,
+    window: Window,
 }
 
 impl CanvasFactory {
@@ -148,7 +149,8 @@ impl CanvasFactory {
         //return Ok(context);
         return Ok(CanvasFactory {
             context,
-            canvas,
+            element: canvas,
+            window,
         });
     }
 }
@@ -172,11 +174,13 @@ impl Game {
     }
 
     fn draw(&mut self) {
-        Self::_resize_canvas(self);
+        Self::resize_canvas(self);
         // get the values
-        let context = self.canvas.context.clone();
-        let canvas = self.canvas.canvas.clone();
-        let window = web_sys::window().expect("no global `window` exists");
+        let (context, canvas, window) = (
+            self.canvas.context.clone(),
+            self.canvas.element.clone(),
+            self.canvas.window.clone(),
+        );
         // window size
         let (x, y) = (
             window.inner_width().unwrap().as_f64().unwrap() / 2.0,
@@ -187,6 +191,7 @@ impl Game {
         
         let _ = sprite(x, y, String::from("/assets/player/player.png"), Some(100.0));
         let _ = sprite(300.0, 100.0, String::from("/assets/cactus/cactus-6.png"), None);
+        let _ = sprite(600.0, 100.0, String::from("/assets/cactus/cactus-5.png"), None);
         //
         context.set_fill_style(&JsValue::from_str(self.bg_color.clone().as_str()));
 
@@ -201,21 +206,22 @@ impl Game {
         context.fill_text(&value.to_string(), 10.0, 50.0).unwrap();
     }
 
-    fn _resize_canvas(&mut self) {
+    fn resize_canvas(&mut self) {
         // change the size of the canvas
-        let window = web_sys::window().expect("no global `window` exists");
-        
-        let canvas = self.canvas.canvas.clone();
+        let window = self.canvas.window.clone();
+        let canvas = self.canvas.element.clone();
 
-        // Get the window size
-        let window_width = window.inner_width().unwrap().as_f64();
-        let window_height = window.inner_height().unwrap().as_f64();
+        // Get the window proportions
+        let (window_width, window_height) = (
+            window.inner_width().unwrap().as_f64().unwrap() as u32,
+            window.inner_height().unwrap().as_f64().unwrap() as u32,
+        );
         
         // Resize the canvas
-        canvas.set_width(window_width.unwrap() as u32);
-        canvas.set_height(window_height.unwrap() as u32);
+        canvas.set_width(window_width);
+        canvas.set_height(window_height);
     }
-}   
+}
 
 #[wasm_bindgen]
 pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
@@ -224,5 +230,5 @@ pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
     /*console::log_1(&game.canvas.clone().into());
     // score
     console::log_1(&game.score.clone().into());*/
-    return Ok(game.canvas.canvas);
+    return Ok(game.canvas.element);
 }
