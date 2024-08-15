@@ -6,7 +6,7 @@ echo "Done!"
 
 # go build
 echo "Building server..."
-go build -o dino
+GOOS=linux GOARCH=amd64 go build -o dino ./src/main.go
 
 # server startup
 echo "Starting server..."

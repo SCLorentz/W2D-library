@@ -1,5 +1,4 @@
 // Todo: create a struct for the game, sprites, etc
-// remove p5 and use this instead
 use wasm_bindgen::prelude::*;
 use std::f64;
 //use web_sys::console;
