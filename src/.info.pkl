@@ -1,4 +1,4 @@
-name = "dino"
+name = "chrome-dino-game"
 version = "0.1.0"
 description = "A simple dino game written in rust and go"
 //

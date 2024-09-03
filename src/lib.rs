@@ -188,9 +188,9 @@ impl Game {
         // canvas size
         let (width, height) = (canvas.width() as f64, canvas.height() as f64);
         
-        let _ = sprite(x, y, String::from("/assets/player/player.png"), Some(100.0));
-        let _ = sprite(300.0, 100.0, String::from("/assets/cactus/cactus-6.png"), None);
-        let _ = sprite(600.0, 100.0, String::from("/assets/cactus/cactus-5.png"), None);
+        let _ = sprite(x, y, String::from("/assets/base/player.png"), Some(100.0));
+        let _ = sprite(300.0, 100.0, String::from("/assets/template/cactus-6.png"), None);
+        let _ = sprite(600.0, 100.0, String::from("/assets/template/cactus-5.png"), None);
         //
         context.set_fill_style(&JsValue::from_str(self.bg_color.clone().as_str()));
 
