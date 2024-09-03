@@ -12,7 +12,7 @@ import (
 func main() {
     fmt.Println("The server has started successfully in http://localhost:8080")
 	// file handle
-	fileServer := http.FileServer(http.Dir("./public"))
+	fileServer := http.FileServer(http.Dir("./frontend"))
     http.Handle("/", fileServer)
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
