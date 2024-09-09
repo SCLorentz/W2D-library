@@ -12,9 +12,6 @@
         "--security-opt",
         "seccomp=unconfined"
     ],
-	"features": {
-		"ghcr.io/devcontainers/features/go:1": {}
-	},
 	"customizations": {
 		"vscode": {
 			// preinstalled extensions for vscode
@@ -29,13 +26,10 @@
 				"rust-lang.rust-analyzer"
 			]
 		}
-	},
+	}
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "chmod +x /workspaces/chrome-dino-game/.devcontainer/cmd/set_up.sh && /workspaces/chrome-dino-game/.devcontainer/cmd/set_up.sh"
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
