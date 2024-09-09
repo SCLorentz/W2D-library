@@ -3,15 +3,22 @@
 {
 	"name": "Chrome-Dino-Game",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/rust:latest",
+	"build": {
+        "dockerfile": "Dockerfile"
+    },
+    //"image": "Dockerfile",
+    "runArgs": [
+        "--cap-add=SYS_PTRACE",
+        "--security-opt",
+        "seccomp=unconfined"
+    ],
 	"features": {
 		"ghcr.io/devcontainers/features/go:1": {}
 	},
-
 	"customizations": {
 		"vscode": {
 			// preinstalled extensions for vscode
-		  	"extensions": [
+			"extensions": [
 				"eamodio.gitlens",
 				"seepine.md-editor",
 				"PKief.material-icon-theme",
