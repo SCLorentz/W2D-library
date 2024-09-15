@@ -1,7 +1,8 @@
 // Todo: create a struct for the game, sprites, etc
 use wasm_bindgen::prelude::*;
 use std::f64;
-//use web_sys::console;
+use std::collections::HashMap;
+use web_sys::console;
 use wasm_bindgen::closure::Closure;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement, Window};
 use std::rc::Rc;
@@ -21,6 +22,7 @@ struct Game {
 }
 
 #[derive(Clone)]
+#[derive(Default)]
 struct Sprite {
     x: f64,
     y: f64,
@@ -187,8 +189,15 @@ impl Game {
         );
         // canvas size
         let (width, height) = (canvas.width() as f64, canvas.height() as f64);
-        
-        let _ = sprite(x, y, String::from("/assets/base/player.png"), Some(100.0));
+
+        // new way
+        //                      Name:  Value:
+        let mut sprites: HashMap<&str, Result<Sprite, wasm_bindgen::JsValue>> = HashMap::new();
+        sprites.insert("Player", sprite(x, y, String::from("/assets/base/player.png"), Some(100.0)));
+        // test the new way with this:
+        let _get_sprite = sprites.get("Player");
+
+        // old way
         let _ = sprite(300.0, 100.0, String::from("/assets/template/cactus-6.png"), None);
         let _ = sprite(600.0, 100.0, String::from("/assets/template/cactus-5.png"), None);
         //
@@ -197,7 +206,7 @@ impl Game {
         // Set a new background color
         context.fill_rect(0.0, 0.0, width, height);
 
-        // use the roboto font
+        // use the roboto font in /assets/font
         context.set_font("20px Arial");
         context.set_fill_style(&JsValue::from_str(self.fg_color.clone().as_str()));
         // draw the score
