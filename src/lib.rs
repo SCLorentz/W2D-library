@@ -2,7 +2,7 @@
 use wasm_bindgen::prelude::*;
 use std::f64;
 use std::collections::HashMap;
-//use web_sys::console;
+use web_sys::console;
 use wasm_bindgen::closure::Closure;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement, Window};
 use std::rc::Rc;
@@ -44,6 +44,10 @@ impl Sprite {
             texture,
             size,
         }
+    }
+
+    fn to_string(&self) -> String {
+        format!("Player {{ texture: {}, size: {}, y: {}, x: {} }}", self.texture, self.size, self.y, self.x)
     }
     
     fn create(&mut self) -> Result<HtmlCanvasElement, JsValue> {
@@ -199,8 +203,6 @@ impl Game {
         let _ = self.sprite("Player", x, y, String::from("/assets/base/player.png"), Some(100.0));
         let _ = self.sprite("cactus-6", 300.0, 100.0, String::from("/assets/template/cactus-6.png"), None);
         let _ = self.sprite("cactus-5", 600.0, 100.0, String::from("/assets/template/cactus-5.png"), None);
-        // get sprite again with
-        let _get_player = self.get_sprite_by_name("Player");
         //
         context.set_fill_style(&JsValue::from_str(self.bg_color.clone().as_str()));
 
@@ -219,10 +221,39 @@ impl Game {
         self.sprites.get(&name.to_string())
     }
 
+    fn print_sprite_info(&mut self, name: &str) {
+        let get_player = self.get_sprite_by_name(name);
+        //
+        let player_string = get_player.unwrap().clone().unwrap().to_string();
+        let js_value = JsValue::from_str(&player_string);
+        //
+        console::log_1(&js_value);
+    }
+
+    fn list_all_sprites(&mut self) {
+        for (key, _) in self.sprites.clone() {
+            let get_player = self.get_sprite_by_name(&key);
+            //
+            let player_string = get_player.unwrap().clone().unwrap().to_string();
+            let js_value = JsValue::from_str(&player_string);
+            //
+            console::log_1(&js_value);
+        }
+    }
+
+    fn get_score(&mut self) {
+        let string = format!("the current score is: {}", &self.score.clone());
+        let value = JsValue::from_str(&string);
+        //
+        console::log_1(&value);
+    }
+
     fn resize_canvas(&mut self) {
         // change the size of the canvas
-        let window = self.canvas.window.clone();
-        let canvas = self.canvas.element.clone();
+        let (window, canvas) = (
+            self.canvas.window.clone(),
+            self.canvas.element.clone()
+        );
 
         // Get the window proportions
         let (window_width, window_height) = (
@@ -238,10 +269,14 @@ impl Game {
 
 #[wasm_bindgen]
 pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
-    let game = Game::new();
+    let mut game = Game::new();
+    // methods
+    game.print_sprite_info("Player");   // prints a especific sprite by name
+    game.list_all_sprites();            // print all the sprites in the game
+    game.get_score();                   // print the current score of the game
+    //
+    let _ = game.sprite("cactus-2", 500.0, 500.0, String::from("/assets/template/cactus-2.png"), None);
     // canvas html element
-    /*console::log_1(&game.canvas.clone().into());
-    // score
-    console::log_1(&game.score.clone().into());*/
+    //console::log_1(&game.canvas.clone().into());
     return Ok(game.canvas.element);
 }
