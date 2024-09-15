@@ -2,7 +2,7 @@
 use wasm_bindgen::prelude::*;
 use std::f64;
 use std::collections::HashMap;
-use web_sys::console;
+//use web_sys::console;
 use wasm_bindgen::closure::Closure;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement, Window};
 use std::rc::Rc;
@@ -19,6 +19,7 @@ struct Game {
     canvas: CanvasFactory,
     bg_color: String,
     fg_color: String,
+    sprites: HashMap<String, Result<Sprite, wasm_bindgen::JsValue>>
 }
 
 #[derive(Clone)]
@@ -105,14 +106,6 @@ impl Sprite {
     }*/
 }
 
-//#[wasm_bindgen]
-/*pub*/ fn sprite(x: f64, y: f64, texture: String, size: Option<f64>) -> Result<Sprite, JsValue> {
-    let mut sprite = Sprite::new(x, y, texture, size);
-    let mut _sprite = Sprite::create(&mut sprite).unwrap();
-    //
-    return Ok(sprite);
-}
-
 // https://medium.com/@mikecode/rust-how-to-store-values-of-different-types-in-a-vector-cf1b62120aa1
 #[derive(Clone)]
 struct CanvasFactory {
@@ -162,16 +155,28 @@ impl Game {
         // get from user theme
         let bg_color = String::from("black");
         let fg_color = String::from("white");
+        let sprites = HashMap::new();
         //
         let mut game = Self {
             score: 1,
             canvas,
             bg_color,
             fg_color,
+            sprites
         };
         Self::draw(&mut game);
         //
         return game;
+    }
+
+    fn sprite(&mut self, name: &str, x: f64, y: f64, texture: String, size: Option<f64>) -> Result<Sprite, JsValue> {
+        let mut sprite = Sprite::new(x, y, texture, size);
+        let mut _sprite = Sprite::create(&mut sprite).unwrap();
+        //
+        let return_value = Ok(sprite).clone();
+        //
+        self.sprites.insert(name.to_string(), return_value.clone());
+        return return_value;
     }
 
     fn draw(&mut self) {
@@ -190,16 +195,12 @@ impl Game {
         // canvas size
         let (width, height) = (canvas.width() as f64, canvas.height() as f64);
 
-        // new way
-        //                      Name:  Value:
-        let mut sprites: HashMap<&str, Result<Sprite, wasm_bindgen::JsValue>> = HashMap::new();
-        sprites.insert("Player", sprite(x, y, String::from("/assets/base/player.png"), Some(100.0)));
-        // test the new way with this:
-        let _get_sprite = sprites.get("Player");
-
-        // old way
-        let _ = sprite(300.0, 100.0, String::from("/assets/template/cactus-6.png"), None);
-        let _ = sprite(600.0, 100.0, String::from("/assets/template/cactus-5.png"), None);
+        // create sprites
+        let _ = self.sprite("Player", x, y, String::from("/assets/base/player.png"), Some(100.0));
+        let _ = self.sprite("cactus-6", 300.0, 100.0, String::from("/assets/template/cactus-6.png"), None);
+        let _ = self.sprite("cactus-5", 600.0, 100.0, String::from("/assets/template/cactus-5.png"), None);
+        // get sprite again with
+        let _get_player = self.get_sprite_by_name("Player");
         //
         context.set_fill_style(&JsValue::from_str(self.bg_color.clone().as_str()));
 
@@ -212,6 +213,10 @@ impl Game {
         // draw the score
         let value = String::from("score: ") + &self.score.clone().to_string();
         context.fill_text(&value.to_string(), 10.0, 50.0).unwrap();
+    }
+
+    fn get_sprite_by_name(&mut self, name: &str) -> Option<&Result<Sprite, wasm_bindgen::JsValue>> {
+        self.sprites.get(&name.to_string())
     }
 
     fn resize_canvas(&mut self) {
