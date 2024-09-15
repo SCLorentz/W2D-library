@@ -248,6 +248,15 @@ impl Game {
         console::log_1(&value);
     }
 
+    fn update_value(&mut self, name: &str) {
+        // get the sprite
+        if let Some(estrutura) = self.sprites.get_mut(name) {
+            estrutura.clone().unwrap().x = 11.0;
+        } else {
+            console::log_1(&JsValue::from_str("sprite not foun!"));
+        }
+    }
+
     fn resize_canvas(&mut self) {
         // change the size of the canvas
         let (window, canvas) = (
@@ -274,6 +283,9 @@ pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
     game.print_sprite_info("Player");   // prints a especific sprite by name
     game.list_all_sprites();            // print all the sprites in the game
     game.get_score();                   // print the current score of the game
+    // Review: this method is not working
+    game.update_value("Player");        // update the value of a sprite
+    game.print_sprite_info("Player");   // print the new value of the sprite
     //
     let _ = game.sprite("cactus-2", 500.0, 500.0, String::from("/assets/template/cactus-2.png"), None);
     // canvas html element
