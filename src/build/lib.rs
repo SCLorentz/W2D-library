@@ -239,9 +239,9 @@ impl Game {
         // get the sprite
         if let Some(estrutura) = self.sprites.get_mut(name) {
             estrutura.clone().unwrap().x = 11.0;
-        } else {
-            console::log_1(&JsValue::from_str("sprite not foun!"));
+            return;
         }
+        console::log_1(&JsValue::from_str("sprite not found!"));
     }
 
     fn update_score(&mut self, value: u32) {
