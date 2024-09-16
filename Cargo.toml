@@ -12,6 +12,7 @@ wasm-bindgen = "0.2"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+path = "src/build/lib.rs"
 
 [dependencies.web-sys]
 version = "0.3.4"

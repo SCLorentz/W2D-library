@@ -1,33 +1,18 @@
 // Todo: create a struct for the game, sprites, etc
 use wasm_bindgen::prelude::*;
 use std::f64;
-use std::collections::HashMap;
 use web_sys::console;
 use wasm_bindgen::closure::Closure;
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement, Window};
+use web_sys::{HtmlCanvasElement, HtmlImageElement};
 use std::rc::Rc;
+use std::collections::HashMap;
+
+mod values;
+use values::*;
 
 #[wasm_bindgen]
 extern {
     pub fn alert(s: &str);
-}
-
-#[derive(Clone)]
-struct Game {
-    score: u32,
-    canvas: CanvasFactory,
-    bg_color: String,
-    fg_color: String,
-    sprites: HashMap<String, Result<Sprite, wasm_bindgen::JsValue>>
-}
-
-#[derive(Clone)]
-#[derive(Default)]
-struct Sprite {
-    x: f64,
-    y: f64,
-    texture: String,
-    size: f64,
 }
 
 impl Sprite {
@@ -107,14 +92,6 @@ impl Sprite {
         self.width = (width / 2.0) - (self.width / 2.0);
         self.height = (height / 2.0) - (self.height / 2.0);
     }*/
-}
-
-// https://medium.com/@mikecode/rust-how-to-store-values-of-different-types-in-a-vector-cf1b62120aa1
-#[derive(Clone)]
-struct CanvasFactory {
-    context: CanvasRenderingContext2d,
-    element: HtmlCanvasElement,
-    window: Window,
 }
 
 impl CanvasFactory {
@@ -287,6 +264,11 @@ impl Game {
         // Resize the canvas
         canvas.set_width(window_width);
         canvas.set_height(window_height);
+    }
+
+    fn _get_canvas_size(&mut self) -> (f64, f64) {
+        let canvas = self.canvas.element.clone();
+        return (canvas.width() as f64, canvas.height() as f64);
     }
 
     fn redraw(&mut self) {
