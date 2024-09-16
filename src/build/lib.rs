@@ -1,7 +1,7 @@
 // Todo: create a struct for the game, sprites, etc
 use wasm_bindgen::prelude::*;
 use std::f64;
-use web_sys::console;
+use web_sys::{console, js_sys};
 use wasm_bindgen::closure::Closure;
 use web_sys::{HtmlCanvasElement, HtmlImageElement};
 use std::rc::Rc;
@@ -279,17 +279,20 @@ impl Game {
 #[wasm_bindgen]
 pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
     let mut game = Game::new();
-    let _ = game.sprite("cactus-2", 500.0, 500.0, String::from("/assets/template/cactus-2.png"), None);
-    // methods
-    game.print_sprite_info("cactus-2");     // prints a especific sprite by name
-    game.list_all_sprites();                // print all the sprites in the game
-    game.get_score();                       // print the current score of the game
-    // Review: this method is not working
-    game.update_value("cactus-2");          // update the value of a sprite
-    game.print_sprite_info("cactus-2");     // print the new value of the sprite
-    //
-    game.update_score(10);                  // update the score
-    game.redraw();                          // redraw the game
+    {
+        // game settings
+        game.sprite("cactus-2", 500.0, 500.0, String::from("/assets/template/cactus-2.png"), None)?;
+        // methods
+        game.print_sprite_info("cactus-2");     // prints a especific sprite by name
+        game.list_all_sprites();                // print all the sprites in the game
+        game.get_score();                       // print the current score of the game
+        // Review: this method is not working
+        game.update_value("cactus-2");          // update the value of a sprite
+        game.print_sprite_info("cactus-2");     // print the new value of the sprite
+        //
+        game.update_score(10);                  // update the score
+        game.redraw();                          // redraw the game
+    }
     // canvas html element
     //console::log_1(&game.canvas.clone().into());
     return Ok(game.canvas.element);
