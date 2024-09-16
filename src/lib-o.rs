@@ -7,6 +7,7 @@ use wasm_bindgen::closure::Closure;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement, Window};
 use std::rc::Rc;
 
+
 #[wasm_bindgen]
 extern {
     pub fn alert(s: &str);
@@ -160,14 +161,14 @@ impl Game {
         let fg_color = String::from("white");
         let sprites = HashMap::new();
         //
-        let mut game = Self {
+        let game = Self {
             score: 1,
             canvas,
             bg_color,
             fg_color,
             sprites
         };
-        Self::draw(&mut game);
+        //Self::draw(&mut game);
         //
         return game;
     }
@@ -185,22 +186,23 @@ impl Game {
     fn draw(&mut self) {
         Self::resize_canvas(self);
         // get the values
-        let (context, canvas, window)= (
+        let (context, canvas/*, window*/) = (
             self.canvas.context.clone(),
             self.canvas.element.clone(),
-            self.canvas.window.clone(),
+            //self.canvas.window.clone(),
         );
         // window size
-        let (x, y) = (
+        /*let (x, y) = (
             window.inner_width().unwrap().as_f64().unwrap() / 2.0,
             window.inner_height().unwrap().as_f64().unwrap() / 2.0
-        );
+        );*/
         // canvas size
         let (width, height) = (canvas.width() as f64, canvas.height() as f64);
 
-        // create player (remove this later)
-        let _ = self.sprite("Player", x, y, String::from("/assets/base/player.png"), Some(100.0));
-        //
+        // create sprites
+        /*let _ = self.sprite("Player", x, y, String::from("/assets/base/player.png"), Some(100.0));
+        let _ = self.sprite("cactus-6", 300.0, 100.0, String::from("/assets/template/cactus-6.png"), None);
+        let _ = self.sprite("cactus-5", 600.0, 100.0, String::from("/assets/template/cactus-5.png"), None);*/
         for (_, v) in self.sprites.clone() {
             // get the sprite values
             let texture = v.clone().unwrap().texture;
@@ -232,20 +234,20 @@ impl Game {
     }
 
     fn print_sprite_info(&mut self, name: &str) {
-        let get_sprite = self.get_sprite_by_name(name);
+        let get_player = self.get_sprite_by_name(name);
         //
-        let sprite_string = get_sprite.unwrap().clone().unwrap().to_string();
-        let js_value = JsValue::from_str(&sprite_string);
+        let player_string = get_player.unwrap().clone().unwrap().to_string();
+        let js_value = JsValue::from_str(&player_string);
         //
         console::log_1(&js_value);
     }
 
     fn list_all_sprites(&mut self) {
         for (key, _) in self.sprites.clone() {
-            let get_sprite = self.get_sprite_by_name(&key);
+            let get_player = self.get_sprite_by_name(&key);
             //
-            let sprite_string = get_sprite.unwrap().clone().unwrap().to_string();
-            let js_value = JsValue::from_str(&sprite_string);
+            let player_string = get_player.unwrap().clone().unwrap().to_string();
+            let js_value = JsValue::from_str(&player_string);
             //
             console::log_1(&js_value);
         }
@@ -262,9 +264,9 @@ impl Game {
         // get the sprite
         if let Some(estrutura) = self.sprites.get_mut(name) {
             estrutura.clone().unwrap().x = 11.0;
-        } else {
-            console::log_1(&JsValue::from_str("sprite not foun!"));
+            return ()
         }
+        console::log_1(&JsValue::from_str("sprite not found!"));
     }
 
     fn update_score(&mut self, value: u32) {
@@ -289,7 +291,7 @@ impl Game {
         canvas.set_height(window_height);
     }
 
-    fn redraw(&mut self) {
+    fn _redraw(&mut self) {
         Self::draw(self);
     }
 }
@@ -297,17 +299,17 @@ impl Game {
 #[wasm_bindgen]
 pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
     let mut game = Game::new();
-    let _ = game.sprite("cactus-2", 500.0, 500.0, String::from("/assets/template/cactus-2.png"), None);
+    let _ = game.sprite("cactus-2", 500.0, 500.0, String::from("/assets/template/cactus-2.png"), Some(500.0));
+    game.draw();
     // methods
-    game.print_sprite_info("cactus-2");     // prints a especific sprite by name
-    game.list_all_sprites();                // print all the sprites in the game
-    game.get_score();                       // print the current score of the game
+    game.print_sprite_info("Player");   // prints a especific sprite by name
+    game.list_all_sprites();            // print all the sprites in the game
+    game.get_score();                   // print the current score of the game
     // Review: this method is not working
-    game.update_value("cactus-2");          // update the value of a sprite
-    game.print_sprite_info("cactus-2");     // print the new value of the sprite
-    //
-    game.update_score(10);                  // update the score
-    game.redraw();                          // redraw the game
+    game.update_value("Player");        // update the value of a sprite
+    game.print_sprite_info("Player");   // print the new value of the sprite
+    game.update_score(10);              // update the score
+    //game.redraw();                    // redraw the game
     // canvas html element
     //console::log_1(&game.canvas.clone().into());
     return Ok(game.canvas.element);
