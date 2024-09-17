@@ -1,7 +1,7 @@
 // Todo: create a struct for the game, sprites, etc
 use wasm_bindgen::prelude::*;
 use std::f64;
-use web_sys::{console, js_sys};
+use web_sys::console;
 use wasm_bindgen::closure::Closure;
 use web_sys::{HtmlCanvasElement, HtmlImageElement};
 use std::rc::Rc;
@@ -10,18 +10,15 @@ use std::collections::HashMap;
 mod values;
 use values::*;
 
-#[wasm_bindgen]
-extern {
-    pub fn alert(s: &str);
-}
-
+// Sprite struct implementation
 impl Sprite {
     fn new(x: f64, y: f64, texture: String, size: Option<f64>) -> Self {
-        // return value
+        // return value data
         let size = match size {
             Some(size) => size,
             None => 100.0,
         };
+        //
         return Self {
             x,
             y,
@@ -92,6 +89,11 @@ impl Sprite {
         self.width = (width / 2.0) - (self.width / 2.0);
         self.height = (height / 2.0) - (self.height / 2.0);
     }*/
+
+    /*fn update_sprite_position(&mut self, x: f64, y: f64) {
+        self.x = x;
+        self.y = y;
+    }*/
 }
 
 impl CanvasFactory {
@@ -105,15 +107,15 @@ impl CanvasFactory {
         let e = document.create_element("canvas")?;
         e.set_id("game-canvas");
 
-        let _ = body.append_child(&e);
+        body.append_child(&e)?;
 
         // draw the canvas
-        let canvas: web_sys::HtmlCanvasElement = e.clone()
+        let element: web_sys::HtmlCanvasElement = e.clone()
             .dyn_into::<web_sys::HtmlCanvasElement>()
             .map_err(|_| ())
             .unwrap();
 
-        let context = canvas
+        let context = element
             .get_context("2d")
             .unwrap()
             .unwrap()
@@ -123,7 +125,7 @@ impl CanvasFactory {
         //return Ok(context);
         return Ok(CanvasFactory {
             context,
-            element: canvas,
+            element,
             window,
         });
     }
@@ -131,19 +133,22 @@ impl CanvasFactory {
 
 impl Game {
     fn new() -> Self {
-        let canvas = CanvasFactory::canvas().unwrap();
-        // get from user theme
-        let bg_color = String::from("black");
-        let fg_color = String::from("white");
-        let sprites = HashMap::new();
+        // game data
+        let (canvas, default_bg_color, default_fg_color, sprites) = (
+            CanvasFactory::canvas().unwrap(),
+            String::from("black"),
+            String::from("white"),
+            HashMap::new()
+        );
         //
         let mut game = Self {
-            score: 1,
-            canvas,
-            bg_color,
-            fg_color,
-            sprites
+            score: 1,                // remove this later, cause it's not a game feature
+            canvas,                  // all canvas data, the context, element and window
+            default_bg_color,        // if no color is provided, use black to background
+            default_fg_color,        // if no color is provided, use white to foreground
+            sprites,                 // a hashmap of all the sprites in the game created
         };
+        // draw the first frame of the game
         Self::draw(&mut game);
         //
         return game;
@@ -157,6 +162,17 @@ impl Game {
         //
         self.sprites.insert(name.to_string(), return_value.clone());
         return return_value;
+    }
+
+    fn draw_text(&mut self, text: &str, x: f64, y: f64, font: &str) {
+        let context = self.canvas.context.clone();
+        // style
+        context.set_font(format!("20px {}", font).as_str());
+        context.set_fill_style(&JsValue::from_str(self.default_fg_color.clone().as_str()));
+        // fill text
+        context.fill_text(text, x, y).unwrap();
+        //
+        //self.text.insert(*random UUID*, (text, x, y, font)); // add the text in a map to be able to redraw it on frame updates
     }
 
     fn draw(&mut self) {
@@ -180,30 +196,29 @@ impl Game {
         //
         for (_, v) in self.sprites.clone() {
             // get the sprite values
-            let texture = v.clone().unwrap().texture;
-            let size = v.clone().unwrap().size;
-            let x = v.clone().unwrap().x;
-            let y = v.clone().unwrap().y;
+            let (texture, size, x, y) = (
+                v.clone().unwrap().texture,
+                v.clone().unwrap().size,
+                v.clone().unwrap().x,
+                v.clone().unwrap().y,
+            );
             // create the sprite
             let mut sprite = Sprite::new(x, y, texture.clone(), Some(size));
-            let mut _sprite = Sprite::create(&mut sprite).unwrap();
+            Sprite::create(&mut sprite).unwrap(); // this is the sprite html element, if you need to use it, use the variable "sprite_element"
             //
             console::log_1(&JsValue::from_str(&texture.to_string()));
         }
         //
-        context.set_fill_style(&JsValue::from_str(self.bg_color.clone().as_str()));
+        context.set_fill_style(&JsValue::from_str(self.default_bg_color.clone().as_str()));
 
         // Set a new background color
         context.fill_rect(0.0, 0.0, width, height);
 
-        // use the roboto font in /assets/font
-        context.set_font("20px Arial");
-        context.set_fill_style(&JsValue::from_str(self.fg_color.clone().as_str()));
-        // draw the score
-        let value = String::from("score: ") + &self.score.clone().to_string();
-        context.fill_text(&value.to_string(), 10.0, 50.0).unwrap();
+        // move this out of the game struct
+        Self::draw_text(self, format!("score: {}", self.score).as_str(), 10.0, 50.0, "Arial");
     }
 
+    // now, I'm going in a path where text and sprites are differents things, but I should rethink this. See the pros and cons
     fn get_sprite_by_name(&mut self, name: &str) -> Option<&Result<Sprite, wasm_bindgen::JsValue>> {
         self.sprites.get(&name.to_string())
     }
@@ -228,6 +243,8 @@ impl Game {
         }
     }
 
+    // remove score related methods, cause it's not a game feature
+    // this should be created in the js side by the user of this lib
     fn get_score(&mut self) {
         let string = format!("the current score is: {}", &self.score.clone());
         let value = JsValue::from_str(&string);
@@ -235,17 +252,18 @@ impl Game {
         console::log_1(&value);
     }
 
-    fn update_value(&mut self, name: &str) {
+    fn update_score(&mut self, value: u32) {
+        self.score = value;
+    }
+
+    // use the sprite struct to update the sprite values instead of the game struct to keep them organizated, share the hashmap between them
+    fn update_sprite_value(&mut self, name: &str) {
         // get the sprite
         if let Some(estrutura) = self.sprites.get_mut(name) {
             estrutura.clone().unwrap().x = 11.0;
             return;
         }
         console::log_1(&JsValue::from_str("sprite not found!"));
-    }
-
-    fn update_score(&mut self, value: u32) {
-        self.score = value;
     }
 
     fn resize_canvas(&mut self) {
@@ -272,6 +290,14 @@ impl Game {
     }
 
     fn redraw(&mut self) {
+        // clear the canvas
+        let (context, canvas) = (
+            self.canvas.context.clone(),
+            self.canvas.element.clone()
+        );
+        //
+        context.clear_rect(0.0, 0.0, canvas.width() as f64, canvas.height() as f64);
+        //
         Self::draw(self);
     }
 }
@@ -282,12 +308,14 @@ pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
     {
         // game settings
         game.sprite("cactus-2", 500.0, 500.0, String::from("/assets/template/cactus-2.png"), None)?;
+        //
+        //game.draw_text(format!("score: {}", game.score).as_str(), 10.0, 50.0, "Arial"); draw the score text here
         // methods
         game.print_sprite_info("cactus-2");     // prints a especific sprite by name
         game.list_all_sprites();                // print all the sprites in the game
         game.get_score();                       // print the current score of the game
         // Review: this method is not working
-        game.update_value("cactus-2");          // update the value of a sprite
+        game.update_sprite_value("cactus-2");   // update the value of a sprite
         game.print_sprite_info("cactus-2");     // print the new value of the sprite
         //
         game.update_score(10);                  // update the score

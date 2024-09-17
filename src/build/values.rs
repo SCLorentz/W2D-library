@@ -13,8 +13,8 @@ pub struct CanvasFactory {
 pub struct Game {
     pub score: u32,
     pub canvas: CanvasFactory,
-    pub bg_color: String,
-    pub fg_color: String,
+    pub default_bg_color: String,
+    pub default_fg_color: String,
     pub sprites: HashMap<String, Result<Sprite, wasm_bindgen::JsValue>>
 }
 
