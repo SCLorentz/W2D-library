@@ -11,9 +11,6 @@ fn values() -> (CanvasRenderingContext2d, HtmlCanvasElement) {
     let window = web_sys::window().expect("no global `window` exists");
     let document = window.document().expect("expecting a document on window");
 
-    // key down event
-    //#[cfg(any(doc, feature = "keypress"))]
-
     // Todo: substitute this method to get the canvas as well
     let canvas = document.get_element_by_id("game-canvas").unwrap();
 
@@ -34,18 +31,13 @@ fn values() -> (CanvasRenderingContext2d, HtmlCanvasElement) {
 }
 
 impl Texture {
-    pub fn new(x: f64, y: f64, texture: String, size: Option<f64>) -> Self {
-        // return value data
-        let size = match size {
-            Some(size) => size,
-            None => 100.0,
-        };
-        //
-        return Self {
+    pub fn new(x: f64, y: f64, texture: String, size: Option<f64>, angle: Option<f64>) -> Self {
+        Self {
             x,
             y,
             texture,
-            size,
+            size: size.unwrap_or(100.0),
+            angle: angle.unwrap_or(0.0),
         }
     }
 
@@ -53,43 +45,65 @@ impl Texture {
         format!("Player {{ texture: {}, size: {}, y: {}, x: {} }}", self.texture, self.size, self.y, self.x)
     }
     
-    pub fn create(&mut self) -> Result<HtmlCanvasElement, JsValue> {
+    pub fn create(&mut self) -> Result<Texture, JsValue> {
         // get the canvas and context
-        let (context, canvas) = values();
+        let (context, _canvas) = values();
 
-        context.begin_path();
-
-        // create a new image (I used gemini for this)
+        // create a new image
         let image = Rc::new(HtmlImageElement::new().unwrap());
         let image_clone = image.clone();
         image.set_src(&String::from(self.texture.clone()));
         // some values. This are needed cause the closure requests them
-        let (img_h, img_w, dx, dy, size) = ( 
+        let (img_h, img_w, dx, dy, size, angle) = ( 
             image.height() as f64,
             image.width() as f64,
             self.x,
             self.y,
-            self.size
+            self.size,
+            self.angle
         );
         let width = size * img_w / img_h;
 
         // Esperar o carregamento da imagem
         let closure = Closure::wrap(Box::new(move || {
-            context.draw_image_with_html_image_element_and_dw_and_dh(&image_clone, dx, dy, width, size).unwrap();
+            // I used AI to help me to rotate the image
+            context.save();
+            // Translate to the center of where the image will be
+            context.translate(dx + width / 2.0, dy + size / 2.0).unwrap();
+            // Rotate
+            context.rotate(angle.to_radians()).unwrap();
+            // Draw the image centered at (0, 0)
+            context.draw_image_with_html_image_element_and_dw_and_dh(
+                &image_clone, 
+                -width / 2.0, 
+                -size / 2.0, 
+                width, 
+                size
+            ).unwrap();
+            
+            context.restore();
         }) as Box<dyn FnMut()>);
         //
         image.set_onload(Some(closure.as_ref().unchecked_ref()));
         closure.forget();
 
-        return Ok(canvas);
+        return Ok(self.clone());
     }
 
-    /*fn rotate(&mut self, angle: f64) {
-        self.x += angle.sin() * 10.0;
-        self.y += angle.cos() * 10.0;
-    }
+    /*pub fn _rotate(&mut self,new_angle: f64) -> Result<Texture, JsValue> {
+        let (context, _) = values();
+        self.angle = new_angle;
+        //
+        context.save();
+        // Translate to the center of where the image will be
+        context.translate(dx + width / 2.0, dy + size / 2.0).unwrap();
+        // Rotate
+        context.rotate(angle.to_radians()).unwrap();
+        //
+        return Ok(self.clone());
+    }*/
 
-    fn resize(&mut self, width: f64, height: f64) {
+    /*fn resize(&mut self, width: f64, height: f64) {
         self.width = (width / 2.0) - (self.width / 2.0);
         self.height = (height / 2.0) - (self.height / 2.0);
     }*/
@@ -102,27 +116,14 @@ impl Texture {
 
 impl Text {
     pub fn new(x: f64, y: f64, text: String, size: Option<f64>, font: Option<String>, color: Option<String>) -> Self {
-        // values and their defaults
-        let size = match size {
-            Some(size) => size,
-            None => 100.0,
-        };
-        let font = match font {
-            Some(font) => font,
-            None => String::from("Arial"),
-        };
-        let color = match color {
-            Some(color) => color,
-            None => String::from("black"),
-        };
         //
         return Self {
             x,
             y,
             text,
-            size,
-            font,
-            color,
+            size: size.unwrap_or(100.0),
+            font: font.unwrap_or(String::from("Arial")),
+            color: color.unwrap_or(String::from("black")),
         }
     }
 

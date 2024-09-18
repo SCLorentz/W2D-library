@@ -87,7 +87,7 @@ impl Game {
     }*/
 
     fn sprite(&mut self, name: &str, x: f64, y: f64, texture: String, size: Option<f64>) -> Result<Texture, JsValue> {
-        let mut sprite = Texture::new(x, y, texture, size);
+        let mut sprite = Texture::new(x, y, texture, size, None);
         let mut _sprite = Texture::create(&mut sprite).unwrap();
         //
         let return_value = Ok(sprite).clone();
@@ -131,7 +131,7 @@ impl Game {
                 val.clone().unwrap().y,
             );
             // create the sprite
-            let mut sprite = Texture::new(x, y, texture.clone(), Some(size));
+            let mut sprite = Texture::new(x, y, texture.clone(), Some(size), Some(90.0));
             Texture::create(&mut sprite).unwrap(); // this is the sprite html element, if you need to use it, use the variable "sprite_element"
             //
             console::log_1(&JsValue::from_str(&texture.to_string()));

@@ -33,6 +33,7 @@ pub struct Texture {
     pub y: f64,
     pub texture: String,
     pub size: f64,
+    pub angle: f64,
 }
 
 #[derive(Clone)]
