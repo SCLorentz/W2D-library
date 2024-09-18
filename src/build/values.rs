@@ -9,19 +9,38 @@ pub struct CanvasFactory {
     pub window: Window,
 }
 
+/*#[derive(Clone)]
+pub enum Values {
+    String(String),
+    Int(i32),
+}*/
+
 #[derive(Clone)]
 pub struct Game {
-    pub score: u32,
+    pub score: u32,                                                         // instead we can use a HashMap to create custom values
+    //pub values: HashMap<String, Values>,
+    //
     pub canvas: CanvasFactory,
     pub default_bg_color: String,
     pub default_fg_color: String,
-    pub sprites: HashMap<String, Result<Sprite, wasm_bindgen::JsValue>>
+    //
+    pub sprites: HashMap<String, Result<Texture, wasm_bindgen::JsValue>>
 }
 
 #[derive(Clone)]
-pub struct Sprite {
+pub struct Texture {
     pub x: f64,
     pub y: f64,
     pub texture: String,
     pub size: f64,
+}
+
+#[derive(Clone)]
+pub struct Text {
+    pub x: f64,
+    pub y: f64,
+    pub text: String,
+    pub size: f64,
+    pub font: String,
+    pub color: String,
 }

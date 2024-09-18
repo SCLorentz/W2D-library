@@ -2,99 +2,14 @@
 use wasm_bindgen::prelude::*;
 use std::f64;
 use web_sys::console;
-use wasm_bindgen::closure::Closure;
-use web_sys::{HtmlCanvasElement, HtmlImageElement};
-use std::rc::Rc;
+use web_sys::HtmlCanvasElement;
 use std::collections::HashMap;
 
 mod values;
 use values::*;
 
-// Sprite struct implementation
-impl Sprite {
-    fn new(x: f64, y: f64, texture: String, size: Option<f64>) -> Self {
-        // return value data
-        let size = match size {
-            Some(size) => size,
-            None => 100.0,
-        };
-        //
-        return Self {
-            x,
-            y,
-            texture,
-            size,
-        }
-    }
-
-    fn to_string(&self) -> String {
-        format!("Player {{ texture: {}, size: {}, y: {}, x: {} }}", self.texture, self.size, self.y, self.x)
-    }
-    
-    fn create(&mut self) -> Result<HtmlCanvasElement, JsValue> {
-        // get the half of the window size
-        let window = web_sys::window().expect("no global `window` exists");
-        let document = window.document().expect("expecting a document on window");
-
-        // key down event
-        //#[cfg(any(doc, feature = "keypress"))]
-
-        // Todo: substitute this method to get the canvas as well
-        let canvas = document.get_element_by_id("game-canvas").unwrap();
-
-        // draw the canvas
-        let canvas: web_sys::HtmlCanvasElement = canvas.clone()
-            .dyn_into::<web_sys::HtmlCanvasElement>()
-            .map_err(|_| ())
-            .unwrap();
-
-        let context = canvas
-            .get_context("2d")
-            .unwrap()
-            .unwrap()
-            .dyn_into::<web_sys::CanvasRenderingContext2d>()
-            .unwrap();
-
-        context.begin_path();
-
-        // create a new image (I used gemini for this)
-        let image = Rc::new(HtmlImageElement::new().unwrap());
-        let image_clone = image.clone();
-        image.set_src(&String::from(self.texture.clone()));
-
-        //
-        let (img_h, img_w) = ( image.height() as f64, image.width() as f64 );
-        let (dx, dy) = (self.x, self.y);
-        //
-        let size = self.size;
-        let width = size * img_w / img_h;
-
-        // Esperar o carregamento da imagem
-        let closure = Closure::wrap(Box::new(move || {
-            //context.draw_image_with_html_image_element(&image_clone, dx, dy).unwrap();
-            context.draw_image_with_html_image_element_and_dw_and_dh(&image_clone, dx, dy, width, size).unwrap();
-        }) as Box<dyn FnMut()>);
-        image.set_onload(Some(closure.as_ref().unchecked_ref()));
-        closure.forget();
-
-        return Ok(canvas);
-    }
-
-    /*fn rotate(&mut self, angle: f64) {
-        self.x += angle.sin() * 10.0;
-        self.y += angle.cos() * 10.0;
-    }
-
-    fn resize(&mut self, width: f64, height: f64) {
-        self.width = (width / 2.0) - (self.width / 2.0);
-        self.height = (height / 2.0) - (self.height / 2.0);
-    }*/
-
-    /*fn update_sprite_position(&mut self, x: f64, y: f64) {
-        self.x = x;
-        self.y = y;
-    }*/
-}
+mod sprites;
+use sprites::Texture;
 
 impl CanvasFactory {
     fn canvas() -> Result<CanvasFactory, JsValue> {
@@ -147,6 +62,7 @@ impl Game {
             default_bg_color,        // if no color is provided, use black to background
             default_fg_color,        // if no color is provided, use white to foreground
             sprites,                 // a hashmap of all the sprites in the game created
+            //values: HashMap::new(),
         };
         // draw the first frame of the game
         Self::draw(&mut game);
@@ -154,9 +70,25 @@ impl Game {
         return game;
     }
 
-    fn sprite(&mut self, name: &str, x: f64, y: f64, texture: String, size: Option<f64>) -> Result<Sprite, JsValue> {
-        let mut sprite = Sprite::new(x, y, texture, size);
-        let mut _sprite = Sprite::create(&mut sprite).unwrap();
+    /*fn create_custom_value(&mut self, name: &str, value: Values) {
+        self.values.insert(name.to_string(), value);
+        // return success or error
+    }*/
+
+    /*fn return_custom_value(&mut self, value: Result<Texture, JsValue>) -> Result<Texture, JsValue> {
+        // get the value in the hashmap
+        // return the value
+    }*/
+    
+    /*fn modify_custom_value(&mut self, name: &str, value: Result<Texture, JsValue>) {
+        // get the value in the hashmap
+        // change it's value
+        // return success or error
+    }*/
+
+    fn sprite(&mut self, name: &str, x: f64, y: f64, texture: String, size: Option<f64>) -> Result<Texture, JsValue> {
+        let mut sprite = Texture::new(x, y, texture, size);
+        let mut _sprite = Texture::create(&mut sprite).unwrap();
         //
         let return_value = Ok(sprite).clone();
         //
@@ -164,15 +96,11 @@ impl Game {
         return return_value;
     }
 
-    fn draw_text(&mut self, text: &str, x: f64, y: f64, font: &str) {
-        let context = self.canvas.context.clone();
-        // style
-        context.set_font(format!("20px {}", font).as_str());
-        context.set_fill_style(&JsValue::from_str(self.default_fg_color.clone().as_str()));
-        // fill text
-        context.fill_text(text, x, y).unwrap();
+    fn draw_text(&mut self, text: &str, x: f64, y: f64, font: &str) -> Result<Text, JsValue> {
+        let mut text = Text::new(x, y, text.to_string(), Some(20.0), Some(font.to_string()), Some(self.default_fg_color.clone()));
+        let _text = text.create().unwrap();
         //
-        //self.text.insert(*random UUID*, (text, x, y, font)); // add the text in a map to be able to redraw it on frame updates
+        return Ok(text);
     }
 
     fn draw(&mut self) {
@@ -194,17 +122,17 @@ impl Game {
         // create player (remove this later)
         let _ = self.sprite("Player", x, y, String::from("/assets/base/player.png"), Some(100.0));
         //
-        for (_, v) in self.sprites.clone() {
+        for (_, val) in self.sprites.clone() {
             // get the sprite values
             let (texture, size, x, y) = (
-                v.clone().unwrap().texture,
-                v.clone().unwrap().size,
-                v.clone().unwrap().x,
-                v.clone().unwrap().y,
+                val.clone().unwrap().texture,
+                val.clone().unwrap().size,
+                val.clone().unwrap().x,
+                val.clone().unwrap().y,
             );
             // create the sprite
-            let mut sprite = Sprite::new(x, y, texture.clone(), Some(size));
-            Sprite::create(&mut sprite).unwrap(); // this is the sprite html element, if you need to use it, use the variable "sprite_element"
+            let mut sprite = Texture::new(x, y, texture.clone(), Some(size));
+            Texture::create(&mut sprite).unwrap(); // this is the sprite html element, if you need to use it, use the variable "sprite_element"
             //
             console::log_1(&JsValue::from_str(&texture.to_string()));
         }
@@ -215,11 +143,11 @@ impl Game {
         context.fill_rect(0.0, 0.0, width, height);
 
         // move this out of the game struct
-        Self::draw_text(self, format!("score: {}", self.score).as_str(), 10.0, 50.0, "Arial");
+        let _ = Self::draw_text(self, format!("score: {}", self.score).as_str(), 10.0, 50.0, "Arial");
     }
 
     // now, I'm going in a path where text and sprites are differents things, but I should rethink this. See the pros and cons
-    fn get_sprite_by_name(&mut self, name: &str) -> Option<&Result<Sprite, wasm_bindgen::JsValue>> {
+    fn get_sprite_by_name(&mut self, name: &str) -> Option<&Result<Texture, JsValue>> {
         self.sprites.get(&name.to_string())
     }
 
@@ -246,10 +174,9 @@ impl Game {
     // remove score related methods, cause it's not a game feature
     // this should be created in the js side by the user of this lib
     fn get_score(&mut self) {
-        let string = format!("the current score is: {}", &self.score.clone());
-        let value = JsValue::from_str(&string);
+        let val = JsValue::from(format!("the current score is: {}", &self.score.clone()));
         //
-        console::log_1(&value);
+        console::log_1(&val);
     }
 
     fn update_score(&mut self, value: u32) {
