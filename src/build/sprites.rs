@@ -11,11 +11,9 @@ fn values() -> (CanvasRenderingContext2d, HtmlCanvasElement) {
     let window = web_sys::window().expect("no global `window` exists");
     let document = window.document().expect("expecting a document on window");
 
-    // Todo: substitute this method to get the canvas as well
-    let canvas = document.get_element_by_id("game-canvas").unwrap();
-
+    // Todo: substitute this method to get the canvas as well. Getting the canvas using the element ID isn't the best way
     // draw the canvas
-    let canvas: web_sys::HtmlCanvasElement = canvas.clone()
+    let canvas: web_sys::HtmlCanvasElement = document.get_element_by_id("game-canvas").unwrap()
         .dyn_into::<web_sys::HtmlCanvasElement>()
         .map_err(|_| ())
         .unwrap();
@@ -52,6 +50,7 @@ impl Texture {
         // create a new image
         let image = Rc::new(HtmlImageElement::new().unwrap());
         let image_clone = image.clone();
+        //
         image.set_src(&String::from(self.texture.clone()));
         // some values. This are needed cause the closure requests them
         let (img_h, img_w, dx, dy, size, angle) = ( 

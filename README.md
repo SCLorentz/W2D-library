@@ -8,14 +8,6 @@ By <a href="//commons.wikimedia.org/w/index.php?title=User:Carlosbaraza&amp;acti
 <hr>
 Have you ever played the google chrome dino game? This is my own version of it, developed in rust using the WASM (web assembly) technology.
 
-## Try on your brower
-
-You can open this project in your browser using: https://google-dino-game.vercel.app/, but the vercel isn't configured to compile the wasm files, so for now, it isn't working
-
-### Warn
-
-I'm still developing the vercel compatibility, so you may found some issues
-
 ## Develop by your own
 
 ### My recomendations - Docker
@@ -29,6 +21,19 @@ If you want to develop your own version of this game, you should get docker inst
 
 To start the server, use: `run`, this command will make shure that everything necessary to make this project work is being executed and is working correctly.
 
+## Game Aesthetics
+
+- The game must be in black and white
+- The textures in pixel art style
+- No size variation of the same texture, size variation require a new texture
+- No fancy pause menu, just a 'esc' button that unpause the game
+- Score and life info must be in the right bottom corner
+- No fancy physics
+- The jump is very precise and cant be to much or to less
+- The terrain should have some variation, it can't be plain, but it can't have to high variation
+- The font should be pixelated
+- The dinossour must have 3 lifes, and for each life lost the sprite will blink for 3 seconds
+
 ## Todo
 
 Those are some stuff that I think that would be cool to add in this project
@@ -38,6 +43,13 @@ Those are some stuff that I think that would be cool to add in this project
 * [ ]  Create a progression difficulty, making the game harder over time
 * [ ]  Create a pause menu acessible with 'esc'
 * [ ]  Add multplayer compatibility
+<!--* [ ]  Create a ranking system to compare with friends <-- that's cool but I need to review (AI recommendation)-->
+* [ ]  Pause the game when the user leave the page and play a 5 seconds countdown when the user return to restart the game
+* [ ]  Save the user's progress if they close the page
+* [ ]  Add other dinos to the game
+* [ ]  Create a procedural generation of the world, not only obstacles, but the game enviroment as well
+* [ ]  Add moon cycle, with different sizes and textures
+* [ ]  Add a life system
 
 I'm not using any libray, and this project is on a begginig stage, finishing this can take a long time
 
