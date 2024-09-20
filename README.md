@@ -1,6 +1,6 @@
 <h1>
   <img src="https://github.com/user-attachments/assets/b081cbb0-0d25-44c6-8dde-87fd111442a0" width="30px">
-  Chrome Dino Game
+  Dino Game
 </h1>
 
 By <a href="//commons.wikimedia.org/w/index.php?title=User:Carlosbaraza&amp;action=edit&amp;redlink=1" class="new" title="User:Carlosbaraza (page does not exist)">Carlos Baraza</a> - <span class="int-own-work" lang="en">Own work</span> / <a rel="nofollow" class="external free" href="https://github.com/carlosbaraza/web-assembly-logo">https://github.com/carlosbaraza/web-assembly-logo</a>, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" title="Creative Commons Zero, Public Domain Dedication">CC0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=56494100">Link</a>
@@ -44,12 +44,13 @@ Those are some stuff that I think that would be cool to add in this project
 * [ ]  Create a pause menu acessible with 'esc'
 * [ ]  Add multplayer compatibility
 <!--* [ ]  Create a ranking system to compare with friends <-- that's cool but I need to review (AI recommendation)-->
-* [ ]  Pause the game when the user leave the page and play a 5 seconds countdown when the user return to restart the game
+* [ ]  Pause the game when the user leave the page and play a 5 seconds countdown when the user return to restart the game, pressing esc on this menu will stop the countdown
 * [ ]  Save the user's progress if they close the page
 * [ ]  Add other dinos to the game
 * [ ]  Create a procedural generation of the world, not only obstacles, but the game enviroment as well
 * [ ]  Add moon cycle, with different sizes and textures
 * [ ]  Add a life system
+* [ ]  Add a God mode, make it contains infinite life, a custom texture for the dinossaur and enable double jump
 
 I'm not using any libray, and this project is on a begginig stage, finishing this can take a long time
 
