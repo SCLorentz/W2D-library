@@ -50,6 +50,7 @@ Those are some stuff that I think that would be cool to add in this project
 * [ ]  Create a procedural generation of the world, not only obstacles, but the game enviroment as well
 * [ ]  Add moon cycle, with different sizes and textures
 * [ ]  Add a life system
+* [ ]  Add a God mode, make it contains infinite life, a custom texture for the dinossaur and enable double jump
 
 I'm not using any libray, and this project is on a begginig stage, finishing this can take a long time
 
