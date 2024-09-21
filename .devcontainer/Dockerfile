@@ -2,13 +2,9 @@
 FROM golang:bookworm
 WORKDIR /app
 
-# install app dependencies
-RUN apt-get update && apt-get install -y build-essential
-RUN apt-get install -y git
-RUN apt-get install -y curl
+# install app dependencies (build-essential, git, curl, npm, rust)
+RUN apt-get update && apt-get install -y build-essential git curl npm
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-# npm
-RUN apt-get install -y npm
 # Instalar wasm-pack
 RUN npm install wasm-pack -g
 
