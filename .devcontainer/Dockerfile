@@ -16,8 +16,8 @@ RUN chmod +x /run.sh
 # create bashrc
 RUN touch ~/.bashrc && chmod u+w ~/.bashrc
 # customize bashrc
-COPY cmd/prompt /
-RUN sh -c 'cat /prompt >> ~/.bashrc'
+COPY cmd/.bashrc /
+RUN echo '. /.bashrc' >> /root/.profile
 # run.sh
 
 # final configuration
