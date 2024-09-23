@@ -9,16 +9,15 @@ pub struct CanvasFactory {
     pub window: Window,
 }
 
-/*#[derive(Clone)]
+#[derive(Clone)]
 pub enum Values {
     String(String),
-    Int(i32),
-}*/
+    Number(i32),
+}
 
 #[derive(Clone)]
 pub struct Game {
-    pub score: u32,                                                         // instead we can use a HashMap to create custom values
-    //pub values: HashMap<String, Values>,
+    pub values: HashMap<String, Values>,
     //
     pub canvas: CanvasFactory,
     pub default_bg_color: String,
@@ -44,4 +43,12 @@ pub struct Text {
     pub size: f64,
     pub font: String,
     pub color: String,
+}
+
+#[derive(Debug)]
+pub enum CustomValueError {
+    EmptyName,
+    DuplicateName,
+    UnexpectedOverwrite,
+    NoMatch,
 }

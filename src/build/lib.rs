@@ -57,12 +57,11 @@ impl Game {
         );
         //
         let mut game = Self {
-            score: 1,                // remove this later, cause it's not a game feature
             canvas,                  // all canvas data, the context, element and window
             default_bg_color,        // if no color is provided, use black to background
             default_fg_color,        // if no color is provided, use white to foreground
             sprites,                 // a hashmap of all the sprites in the game created
-            //values: HashMap::new(),
+            values: HashMap::new(),  // a hashmap of all the values created by the user
         };
         // draw the first frame of the game
         Self::draw(&mut game);
@@ -70,15 +69,25 @@ impl Game {
         return game;
     }
 
-    /*fn create_custom_value(&mut self, name: &str, value: Values) {
-        self.values.insert(name.to_string(), value);
+    fn create_custom_value(&mut self, name: &str, value: Values) -> Result<(), String> {
+        if self.values.contains_key(name) {
+            //return Err(CustomValueError::DuplicateName);
+            return Err(String::from("Duplicate name"));
+        }
+        //
+        let _ = match self.values.insert(name.to_string(), value) {
+            //Some(_) => Err(CustomValueError::UnexpectedOverwrite),
+            Some(_) => Err(String::from("Unexpected overwrite")),
+            None => Ok(()),
+        };
         // return success or error
-    }*/
+        return Ok(());
+    }
 
-    /*fn return_custom_value(&mut self, value: Result<Texture, JsValue>) -> Result<Texture, JsValue> {
-        // get the value in the hashmap
-        // return the value
-    }*/
+    fn return_custom_value(&mut self, name: &str) -> Result<&Values, JsValue> {
+        //return self.values.get(name).unwrap_or(CustomValueError::NoMatch);
+        return Ok(self.values.get(name).unwrap());//.unwrap_or(JsValue::from_str("No match")));
+    }
     
     /*fn modify_custom_value(&mut self, name: &str, value: Result<Texture, JsValue>) {
         // get the value in the hashmap
@@ -143,7 +152,8 @@ impl Game {
         context.fill_rect(0.0, 0.0, width, height);
 
         // move this out of the game struct
-        let _ = Self::draw_text(self, format!("score: {}", self.score).as_str(), 10.0, 50.0, "Arial");
+        //let _ = Self::draw_text(self, format!("score: {}", self.score).as_str(), 10.0, 50.0, "Arial");
+        let _ = self.draw_text("hello world", 10.0, 50.0, "Arial");
     }
 
     // now, I'm going in a path where text and sprites are differents things, but I should rethink this. See the pros and cons
@@ -169,18 +179,6 @@ impl Game {
             //
             console::log_1(&js_value);
         }
-    }
-
-    // remove score related methods, cause it's not a game feature
-    // this should be created in the js side by the user of this lib
-    fn get_score(&mut self) {
-        let val = JsValue::from(format!("the current score is: {}", &self.score.clone()));
-        //
-        console::log_1(&val);
-    }
-
-    fn update_score(&mut self, value: u32) {
-        self.score = value;
     }
 
     // use the sprite struct to update the sprite values instead of the game struct to keep them organizated, share the hashmap between them
@@ -229,6 +227,18 @@ impl Game {
     }
 }
 
+// extra. This is not a game feature
+
+/*fn get_score(&mut self) {
+    let val = JsValue::from(format!("the current score is: {}", &self.score.clone()));
+    //
+    console::log_1(&val);
+}
+
+fn update_score(&mut self, value: u32) {
+    self.score = value;
+}*/
+
 #[wasm_bindgen]
 pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
     let mut game = Game::new();
@@ -240,12 +250,17 @@ pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
         // methods
         game.print_sprite_info("cactus-2");     // prints a especific sprite by name
         game.list_all_sprites();                // print all the sprites in the game
-        game.get_score();                       // print the current score of the game
+        // score
+        game.create_custom_value("score", Values::Number(10))?;
+        let _score = game.return_custom_value("score");
+        //console::log_1(&JsValue::from_str(&score.unwrap()));
+        //
+        //game.get_score();                     // print the current score of the game
         // Review: this method is not working
         game.update_sprite_value("cactus-2");   // update the value of a sprite
         game.print_sprite_info("cactus-2");     // print the new value of the sprite
         //
-        game.update_score(10);                  // update the score
+        //game.update_score(10);                // update the score
         game.redraw();                          // redraw the game
     }
     // canvas html element
