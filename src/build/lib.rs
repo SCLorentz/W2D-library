@@ -12,7 +12,7 @@ use js_sys::Reflect;*/
 //use js_sys::Object;
 
 mod values;
-use values::*;
+//use values::*;
 
 mod sprites;
 use sprites::Texture;
@@ -200,7 +200,7 @@ use sprites::Texture;
 
 // extra. This is not a game feature
 
-/*fn get_score(&mut self) {
+fn get_score(&mut self) {
     let val = JsValue::from(format!("the current score is: {}", &self.score.clone()));
     //
     console::log_1(&val);
@@ -209,36 +209,6 @@ use sprites::Texture;
 fn update_score(&mut self, value: u32) {
     self.score = value;
 }*/
-
-#[wasm_bindgen]
-pub fn start_game() -> Result<HtmlCanvasElement, JsValue> {
-    let mut game = Game::new();
-    {
-        // game settings
-        game.sprite("cactus-2", 500.0, 500.0, String::from("/assets/template/cactus-2.png"), None)?;
-        //
-        //game.draw_text(format!("score: {}", game.score).as_str(), 10.0, 50.0, "Arial"); draw the score text here
-        // methods
-        game.print_sprite_info("cactus-2");     // prints a especific sprite by name
-        game.list_all_sprites();                // print all the sprites in the game
-        // score
-        game.create_custom_value("score", Values::Number(10))?;
-        let _score = game.return_custom_value("score");
-        //console::log_1(&JsValue::from_str(&score.unwrap()));
-        //
-        //game.get_score();                     // print the current score of the game
-        // Review: this method is not working
-        game.update_sprite_value("cactus-2");   // update the value of a sprite
-        game.print_sprite_info("cactus-2");     // print the new value of the sprite
-        //
-        //game.update_score(10);                // update the score
-        game.redraw();                          // redraw the game
-    }
-    // canvas html element
-    //console::log_1(&game.canvas.clone().into());
-    return Ok(game.canvas.element);
-}*/
-
 
 #[wasm_bindgen]
 #[derive(Clone)]
@@ -398,5 +368,20 @@ impl Game {
         self.data.insert(id, sprite);
         //
         return self.clone()
+    }
+
+    pub fn get_canvas_size(&mut self) -> Vec<u32> {
+        let canvas = self.get_html_element().unwrap();
+        //
+        return vec![canvas.width(), canvas.height()]
+    }
+
+    pub fn update_sprite_value(&mut self, name: &str) {
+        // get the sprite
+        if let Some(estrutura) = self.data.get_mut(name) {
+            estrutura.clone().x = 11.0;
+            return;
+        }
+        //console::log_1(&JsValue::from_str("sprite not found!"));
     }
 }
