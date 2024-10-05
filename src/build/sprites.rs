@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::closure::Closure;
-use web_sys::{HtmlCanvasElement, HtmlImageElement, CanvasRenderingContext2d};
+use web_sys::HtmlImageElement;
 use std::rc::Rc;
 
 pub use crate::values::Texture;

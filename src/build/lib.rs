@@ -4,10 +4,10 @@ use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 use std::collections::HashMap;
 /*use web_sys::CanvasRenderingContext2d;
 use std::f64;
-use web_sys::console;
 use web_sys::HtmlCanvasElement;
 use std::collections::HashMap;
 use js_sys::Reflect;*/
+//use web_sys::console;
 
 //use js_sys::Object;
 
@@ -247,7 +247,7 @@ pub struct Game {
     canvas_context: Option<CanvasRenderingContext2d>,
     bg_color: String,
     // Todo: transform this in a map
-    _data: HashMap<String, String>,                                     // this is where the sprites and texts will be saved
+    data: HashMap<String, Texture>,                                     // this is where the sprites and texts will be saved
     _custom_value: HashMap<String, String>                              // This is where the custom values created by the user of the lib will be saved
 }
 
@@ -260,20 +260,20 @@ impl Game {
     pub fn new() -> Game {
         //
         let (html_element, canvas_context, bg_color) = (None, None, String::from("white"));
-        let _data = HashMap::new();
+        let data = HashMap::new();
         let _custom_value = HashMap::new();
 
         Game {
             html_element,
             canvas_context,
             bg_color,
-            _data,
+            data,
             _custom_value,
         }
     }
 
     #[wasm_bindgen]
-    pub fn inicialize(&mut self) -> Result<(), JsValue> {
+    pub fn inicialize(&mut self) -> Result<Game, JsValue> {
         //
         let window = web_sys::window().expect("no global `window` exists");
         let document = window.document().expect("should have a document on window");
@@ -300,11 +300,31 @@ impl Game {
 
         self.canvas_context = Some(context.clone());
         
-        Ok(())
+        Ok(self.clone())
     }
 
     fn update(&mut self) {
-
+        // set the bg color
+        self.get_canvas_context().unwrap().save();
+        Self::set_bg_color(&mut self.clone(), self.bg_color.clone());
+        // redraw sprites
+        // review: try do do a recursive function call, with an index of the values that need to be updated, for each call the index number is smaller
+        for (_, val) in self.data.clone() {
+            // get the sprite values
+            let texture = Texture {
+                x: val.x,
+                y: val.y,
+                texture: val.texture,
+                size: val.size,
+                angle: val.angle,
+                canvas: val.canvas,
+            };
+            // create the sprite
+            let mut sprite = Texture::new(texture.clone());
+            let _ = sprite.create();
+            //
+            //console::log_1(&JsValue::from_str(&texture.to_string()));
+        }
     }
 
     pub fn force_update(&mut self) {
@@ -320,7 +340,7 @@ impl Game {
         self.canvas_context.clone()
     }
 
-    pub fn resize_canvas(&mut self) {
+    pub fn resize_canvas(&mut self) -> Game {
         // change the size of the canvas
         let (window, canvas) = (
             web_sys::window().expect("no global `window` exists"),
@@ -337,11 +357,12 @@ impl Game {
         canvas.set_width(window_width);
         canvas.set_height(window_height);
 
-        // instead, let's call the redraw function, cause this updates everything
-        Self::set_bg_color(&mut self.clone(), self.bg_color.clone());
+        Self::update(&mut self.clone());
+        //
+        return self.clone()
     }
 
-    pub fn set_bg_color(&mut self, bg_color: String) {
+    pub fn set_bg_color(&mut self, bg_color: String) -> Game {
         //
         self.bg_color = bg_color.clone();
         //
@@ -354,9 +375,11 @@ impl Game {
 
         // Set a new background color
         context.fill_rect(0.0, 0.0, width, height);
+        //
+        return self.clone()
     }
 
-    pub fn create_sprite(&mut self, x: f64, y: f64, texture: String, size: Option<f64>, angle: Option<f64>) {
+    pub fn create_sprite(&mut self, id: String, x: f64, y: f64, texture: String, size: Option<f64>, angle: Option<f64>) -> Game {
         // get canvas
         let canvas = (self.get_canvas_context().unwrap(), self.get_html_element().unwrap());
         //
@@ -371,5 +394,9 @@ impl Game {
         // create sprite
         let mut sprite = Texture::new(texture);
         let _ = sprite.create();
+        //
+        self.data.insert(id, sprite);
+        //
+        return self.clone()
     }
 }
