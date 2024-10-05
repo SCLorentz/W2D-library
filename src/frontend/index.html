@@ -28,18 +28,19 @@
 </head>
 <body>
     <script type="module">
-        import init, { start_game } from "/script/chrome_dino_game.js";
-        let canvas;
+        import init, { Game } from "/script/chrome_dino_game.js";
+        //
+        let obj;
         //
         init().then(() => {
-            canvas = start_game();
-            console.log(canvas);
+            obj = new Game();
+            //
+            obj.inicialize();
+            obj.resize_canvas();
+            obj.set_bg_color("black");
         });
-        window.addEventListener("resize", () => {
-            // change the code to use the rust one
-            canvas.setWidth = window.innerWidth;
-            canvas.setHeight = window.innerHeight;
-        });
+
+        window.addEventListener("resize", () => obj.resize_canvas())
     </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-use wasm_bindgen::prelude::*;
+/*use wasm_bindgen::prelude::*;
 use wasm_bindgen::closure::Closure;
 use web_sys::{HtmlCanvasElement, HtmlImageElement};
 use std::rc::Rc;
@@ -141,4 +141,4 @@ impl Text {
         context.fill_text(&self.text, self.x, self.y).unwrap();
         return Ok(canvas);
     }
-}
+}*/

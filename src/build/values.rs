@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+/*use std::collections::HashMap;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, Window};
 
 // https://medium.com/@mikecode/rust-how-to-store-values-of-different-types-in-a-vector-cf1b62120aa1
@@ -14,7 +14,6 @@ pub enum Values {
     String(String),
     Number(i32),
 }
-
 #[derive(Clone)]
 pub struct Game {
     pub values: HashMap<String, Values>,
@@ -51,4 +50,4 @@ pub enum CustomValueError {
     DuplicateName,
     UnexpectedOverwrite,
     NoMatch,
-}
+}*/
