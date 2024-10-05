@@ -26,15 +26,6 @@ pub struct Game {
 }
 
 #[derive(Clone)]
-pub struct Texture {
-    pub x: f64,
-    pub y: f64,
-    pub texture: String,
-    pub size: f64,
-    pub angle: f64,
-}
-
-#[derive(Clone)]
 pub struct Text {
     pub x: f64,
     pub y: f64,
@@ -51,3 +42,15 @@ pub enum CustomValueError {
     UnexpectedOverwrite,
     NoMatch,
 }*/
+
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+
+#[derive(Clone)]
+pub struct Texture {
+    pub x: f64,
+    pub y: f64,
+    pub texture: String,
+    pub size: Option<f64>,
+    pub angle: Option<f64>,
+    pub canvas: (CanvasRenderingContext2d, HtmlCanvasElement)
+}

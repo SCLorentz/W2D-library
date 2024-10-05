@@ -1,6 +1,7 @@
 // Todo: create a struct for the game, sprites, etc
 use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use std::collections::HashMap;
 /*use web_sys::CanvasRenderingContext2d;
 use std::f64;
 use web_sys::console;
@@ -10,11 +11,11 @@ use js_sys::Reflect;*/
 
 //use js_sys::Object;
 
-/*mod values;
-use values::*;*/
+mod values;
+use values::*;
 
-/*mod sprites;
-use sprites::Texture;*/
+mod sprites;
+use sprites::Texture;
 
 /*impl Game {
     fn new() -> Self {
@@ -246,8 +247,8 @@ pub struct Game {
     canvas_context: Option<CanvasRenderingContext2d>,
     bg_color: String,
     // Todo: transform this in a map
-    _data: Vec<String>,                                     // this is where the sprites and texts will be saved
-    _custom_value: Vec<String>                              // This is where the custom values created by the user of the lib will be saved
+    _data: HashMap<String, String>,                                     // this is where the sprites and texts will be saved
+    _custom_value: HashMap<String, String>                              // This is where the custom values created by the user of the lib will be saved
 }
 
 // Todo: create a different list containing only the sprites that are beeing rendered and exclude the ones that aren't visible
@@ -259,8 +260,8 @@ impl Game {
     pub fn new() -> Game {
         //
         let (html_element, canvas_context, bg_color) = (None, None, String::from("white"));
-        let _data = Vec::new();
-        let _custom_value = Vec::new();
+        let _data = HashMap::new();
+        let _custom_value = HashMap::new();
 
         Game {
             html_element,
@@ -302,8 +303,13 @@ impl Game {
         Ok(())
     }
 
-    pub fn update(&mut self) {
+    fn update(&mut self) {
 
+    }
+
+    pub fn force_update(&mut self) {
+        //
+        Self::update(&mut self.clone());
     }
 
     pub fn get_html_element(&mut self) -> Option<HtmlCanvasElement> {
@@ -348,5 +354,22 @@ impl Game {
 
         // Set a new background color
         context.fill_rect(0.0, 0.0, width, height);
+    }
+
+    pub fn create_sprite(&mut self, x: f64, y: f64, texture: String, size: Option<f64>, angle: Option<f64>) {
+        // get canvas
+        let canvas = (self.get_canvas_context().unwrap(), self.get_html_element().unwrap());
+        //
+        let texture = Texture {
+            x,
+            y,
+            texture,
+            size,
+            angle,
+            canvas
+        };
+        // create sprite
+        let mut sprite = Texture::new(texture);
+        let _ = sprite.create();
     }
 }

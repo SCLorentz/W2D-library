@@ -1,51 +1,24 @@
-/*use wasm_bindgen::prelude::*;
+use wasm_bindgen::prelude::*;
 use wasm_bindgen::closure::Closure;
-use web_sys::{HtmlCanvasElement, HtmlImageElement};
+use web_sys::{HtmlCanvasElement, HtmlImageElement, CanvasRenderingContext2d};
 use std::rc::Rc;
-use web_sys::CanvasRenderingContext2d;
 
-pub use crate::values::*;
-
-fn values() -> (CanvasRenderingContext2d, HtmlCanvasElement) {
-    // get the half of the window size
-    let window = web_sys::window().expect("no global `window` exists");
-    let document = window.document().expect("expecting a document on window");
-
-    // Todo: substitute this method to get the canvas as well. Getting the canvas using the element ID isn't the best way
-    // draw the canvas
-    let canvas: web_sys::HtmlCanvasElement = document.get_element_by_id("game-canvas").unwrap()
-        .dyn_into::<web_sys::HtmlCanvasElement>()
-        .map_err(|_| ())
-        .unwrap();
-
-    let context = canvas
-        .get_context("2d")
-        .unwrap()
-        .unwrap()
-        .dyn_into::<web_sys::CanvasRenderingContext2d>()
-        .unwrap();
-
-    return (context, canvas);
-}
+pub use crate::values::Texture;
 
 impl Texture {
-    pub fn new(x: f64, y: f64, texture: String, size: Option<f64>, angle: Option<f64>) -> Self {
-        Self {
-            x,
-            y,
-            texture,
-            size: size.unwrap_or(100.0),
-            angle: angle.unwrap_or(0.0),
-        }
+    //
+    pub fn new(value: Texture) -> Self {
+        value
     }
 
+    #[allow(dead_code)]
     pub fn to_string(&self) -> String {
-        format!("Player {{ texture: {}, size: {}, y: {}, x: {} }}", self.texture, self.size, self.y, self.x)
+        format!("Player {{ texture: {}, size: {:?}, y: {}, x: {} }}", self.texture, self.size, self.y, self.x)
     }
     
     pub fn create(&mut self) -> Result<Texture, JsValue> {
         // get the canvas and context
-        let (context, _canvas) = values();
+        let (context, _canvas) = self.clone().canvas;
 
         // create a new image
         let image = Rc::new(HtmlImageElement::new().unwrap());
@@ -58,9 +31,10 @@ impl Texture {
             image.width() as f64,
             self.x,
             self.y,
-            self.size,
-            self.angle
+            self.size.unwrap_or(0.0),
+            self.angle.unwrap_or(100.0)
         );
+
         let width = size * img_w / img_h;
 
         // Esperar o carregamento da imagem
@@ -113,7 +87,7 @@ impl Texture {
     }*/
 }
 
-impl Text {
+/*impl Text {
     pub fn new(x: f64, y: f64, text: String, size: Option<f64>, font: Option<String>, color: Option<String>) -> Self {
         //
         return Self {
