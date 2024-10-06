@@ -15,7 +15,7 @@ mod values;
 use values::*;
 
 mod sprites;
-use sprites::Texture;
+use sprites::Sprite;
 
 /*impl Game {
     fn new() -> Self {
@@ -217,7 +217,7 @@ pub struct Game {
     canvas_context: Option<CanvasRenderingContext2d>,
     bg_color: String,
     // Todo: transform this in a map
-    data: HashMap<String, Texture>,                                     // this is where the sprites and texts will be saved
+    data: HashMap<String, Sprite>,                                     // this is where the sprites and texts will be saved
     _custom_value: HashMap<String, String>                              // This is where the custom values created by the user of the lib will be saved
 }
 
@@ -284,7 +284,7 @@ impl Game {
         //
     }
 
-    fn reload_sprites(&mut self, mut vec: Vec<Texture>) -> Result<(), JsValue> {
+    fn reload_sprites(&mut self, mut vec: Vec<Sprite>) -> Result<(), JsValue> {
         //
         if vec.is_empty() {
             return Ok(());
@@ -292,8 +292,8 @@ impl Game {
         //
         let first = vec.remove(0);
         // create the sprite
-        let mut sprite = Texture::new(first);
-        let _ = sprite.create();
+        let mut sprite = Sprite::new(first);
+        let _ = sprite.render();
         //
         Self::reload_sprites(self, vec)?;
         //
@@ -350,44 +350,41 @@ impl Game {
         self.bg_color = bg_color;
     }
 
-    pub fn create_sprite(&mut self, id: String, x: f64, y: f64, texture: String, size: Option<f64>, angle: Option<f64>) -> Game {
+    pub fn new_image(&mut self, id: String, x: f64, y: f64, path: String, size: Option<f64>, angle: Option<f64>) -> Game {
         // get canvas
         let canvas = (self.get_canvas_context().unwrap(), self.get_html_element().unwrap());
         //
-        let texture = Texture {
-            x,
-            y,
-            texture,
+        let texture = Sprite {
+            kind: Kind::Image(Image { path }),
+            pos: (x, y),
             size,
             angle,
             canvas
         };
         // create sprite
-        let mut sprite = Texture::new(texture);
-        let _ = sprite.create();
+        let mut sprite = Sprite::new(texture);
+        let _ = sprite.render();
         //
         self.data.insert(id, sprite);
         return self.clone()
     }
 
-    pub fn draw_text(&mut self, text: String, x: f64, y: f64,  size: f64, font: Option<String>,) -> Game {
-        //
+    pub fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String) -> Game {
+        // get canvas
         let canvas = (self.get_canvas_context().unwrap(), self.get_html_element().unwrap());
         //
-        let value = Text {
-            x,
-            y,
-            font: font.unwrap_or(String::from("arial")),
-            color: String::from("white"),
-            size,
-            text,
-            angle: Some(0.0),
+        let texture = Sprite {
+            kind: Kind::Text(Text { value, color, font }),
+            pos: (x, y),
+            size: None,
+            angle: None,
             canvas
         };
+        // create sprite
+        let mut sprite = Sprite::new(texture);
+        let _ = sprite.render();
         //
-        let mut text = Text::new(value);
-        let _ = text.create().unwrap();
-        //
+        self.data.insert(id, sprite);
         return self.clone()
     }
 
@@ -397,14 +394,14 @@ impl Game {
         return vec![canvas.width(), canvas.height()]
     }
 
-    pub fn update_sprite_value(&mut self, name: &str, x: f64) {
+    pub fn update_sprite_value(&mut self, name: &str, x: f64, y: f64) {
         //
         console::log_1(&JsValue::from_str(&x.to_string()));
         // get the sprite
         if let Some(estrutura) = self.data.get_mut(name) {
             //console::log_1(&JsValue::from_str(estrutura.x.to_string().as_str()));
             //
-            estrutura.x = x;
+            estrutura.pos = (x, y);
             return;
         }
         console::log_1(&JsValue::from_str("sprite not found!"));

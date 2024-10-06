@@ -7,7 +7,7 @@ obj.inicialize();
 obj.resize_canvas();
 obj.set_bg_color("black");
 // render elements
-obj.create_sprite(
+obj.new_image(
     "buzz",
     "500.0",
     "250.0",
@@ -15,7 +15,7 @@ obj.create_sprite(
     "250.0",
     "45.0"
 )
-obj.create_sprite(
+obj.new_image(
     "dino",
     "500.0",
     "100.0",
@@ -25,10 +25,10 @@ obj.create_sprite(
 )
 
 // for now, texts aren't beeing redrawed when the canvas reload, I could resolve this creating a new list and fn separated for them, but I want to merge it with the 'sprite' one
-obj.draw_text("myHelloWorld", "Hello world", "600.0", "400.0", "100.0")
+obj.new_text("myHelloWorld", "Hello world", "600.0", "400.0", "100.0")
 
 window.addEventListener("click", () => {
-    obj.update_sprite_value("buzz", "650.0");
+    obj.update_sprite_value("buzz", "650.0", "250.0");
     obj.force_update();
 })
 

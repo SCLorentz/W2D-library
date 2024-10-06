@@ -35,7 +35,7 @@ pub enum CustomValueError {
 
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 
-#[derive(Clone)]
+/*#[derive(Clone)]
 pub struct Texture {
     pub x: f64,
     pub y: f64,
@@ -43,18 +43,34 @@ pub struct Texture {
     pub size: Option<f64>,
     pub angle: Option<f64>,
     pub canvas: (CanvasRenderingContext2d, HtmlCanvasElement)
+}*/
+
+#[derive(Clone)]
+#[derive(Debug)]
+pub struct Image {
+    pub path: String,
 }
+
 #[derive(Clone)]
 pub struct Text {
-    pub x: f64,
-    pub y: f64,
-    pub size: f64,
-    #[allow(dead_code)] // this is anoying allow it for now
+    pub value: String,
+    pub color: String,
+    pub font: String,
+}
+
+#[derive(Clone)]
+pub struct Sprite {
+    pub kind: Kind,
+    //
+    pub pos: (f64, f64),
+    pub size: Option<f64>,
     pub angle: Option<f64>,
     //
-    pub text: String,
-    pub font: String,
-    pub color: String,
-    //
     pub canvas: (CanvasRenderingContext2d, HtmlCanvasElement)
+}
+
+#[derive(Clone)]
+pub enum Kind {
+    Image(Image),
+    Text(Text),
 }

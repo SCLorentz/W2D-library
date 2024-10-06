@@ -3,34 +3,58 @@ use wasm_bindgen::closure::Closure;
 use web_sys::HtmlImageElement;
 use std::rc::Rc;
 
-pub use crate::values::{Texture, Text};
+pub use crate::values::Sprite;
+use crate::{Image, Kind, Text};
 
-impl Texture {
+impl Sprite {
     //
-    pub fn new(value: Texture) -> Self {
+    pub fn new(value: Sprite) -> Self {
         value
     }
 
     #[allow(dead_code)]
     pub fn to_string(&self) -> String {
-        format!("Player {{ texture: {}, size: {:?}, y: {}, x: {} }}", self.texture, self.size, self.y, self.x)
+        //
+        let (x, y) = self.pos;
+        match &self.kind {
+            Kind::Image(image) => format!("Image {{ texture: {:?}, size: {:?}, x: {}, y: {} }}", image.path, self.size, x, y),
+            Kind::Text(text) => format!("Text {{ value: {:?}, color: {:?}, x: {}, y: {} }}", text.value, text.color, x, y)
+        }
+    }
+
+    pub fn render(&mut self) -> Result<(), JsValue> {
+        match &self.kind {
+            Kind::Image(image) => {
+                Self::create_image(self, image.clone())?;
+                //
+                return Ok(());
+            }
+            Kind::Text(text) => {
+                Self::create_text(self, text.clone())?;
+                //
+                return Ok(());
+            }
+        }
     }
     
-    pub fn create(&mut self) -> Result<Texture, JsValue> {
+    pub fn create_image(&mut self, image: Image) -> Result<Sprite, JsValue> {
         // get the canvas and context
-        let (context, _canvas) = self.clone().canvas;
+        let (context, _) = self.clone().canvas;
+        let (x, y) = self.pos;
+
+        let image_path = image.path;
 
         // create a new image
         let image = Rc::new(HtmlImageElement::new().unwrap());
         let image_clone = image.clone();
         //
-        image.set_src(&String::from(self.texture.clone()));
+        image.set_src(&String::from(image_path));
         // some values. This are needed cause the closure requests them
         let (img_h, img_w, dx, dy, size, angle) = ( 
             image.height() as f64,
             image.width() as f64,
-            self.x,
-            self.y,
+            x,
+            y,
             self.size.unwrap_or(0.0),
             self.angle.unwrap_or(100.0)
         );
@@ -63,50 +87,16 @@ impl Texture {
         return Ok(self.clone());
     }
 
-    /*pub fn _rotate(&mut self,new_angle: f64) -> Result<Texture, JsValue> {
-        let (context, _) = values();
-        self.angle = new_angle;
-        //
-        context.save();
-        // Translate to the center of where the image will be
-        context.translate(dx + width / 2.0, dy + size / 2.0).unwrap();
-        // Rotate
-        context.rotate(angle.to_radians()).unwrap();
-        //
-        return Ok(self.clone());
-    }*/
-
-    /*fn resize(&mut self, width: f64, height: f64) {
-        self.width = (width / 2.0) - (self.width / 2.0);
-        self.height = (height / 2.0) - (self.height / 2.0);
-    }*/
-
-    /*fn update_sprite_position(&mut self, x: f64, y: f64) {
-        self.x = x;
-        self.y = y;
-    }*/
-}
-
-impl Text {
-
-    pub fn new(value: Text) -> Self {
-        value
-    }
-
-    #[allow(dead_code)]
-    pub fn to_string(&self) -> String {
-        format!("Text {{ text: {}, size: {}, y: {}, x: {} }}", self.text, self.size, self.y, self.x)
-    }
-    
-    pub fn create(&mut self) -> Result<Text, JsValue> {
+    pub fn create_text(&mut self, text: Text) -> Result<Sprite, JsValue> {
         // get the canvas and context
+        let (x, y) = self.pos;
         let (context, _) = self.clone().canvas;
         // style
-        context.set_font(format!("{}px {}", self.size, self.font).as_str());
-        context.set_fill_style(&JsValue::from_str(self.color.clone().as_str()));
+        context.set_font(format!("{}px {}", self.size.unwrap_or(100.0), text.font).as_str());
+        context.set_fill_style(&JsValue::from_str(text.color.as_str()));
 
         context.begin_path();
-        context.fill_text(&self.text, self.x, self.y).unwrap();
+        context.fill_text(&text.value, x, y).unwrap();
         //
         return Ok(self.clone());
     }
