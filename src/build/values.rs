@@ -25,16 +25,6 @@ pub struct Game {
     pub sprites: HashMap<String, Result<Texture, wasm_bindgen::JsValue>>
 }
 
-#[derive(Clone)]
-pub struct Text {
-    pub x: f64,
-    pub y: f64,
-    pub text: String,
-    pub size: f64,
-    pub font: String,
-    pub color: String,
-}
-
 #[derive(Debug)]
 pub enum CustomValueError {
     EmptyName,
@@ -52,5 +42,19 @@ pub struct Texture {
     pub texture: String,
     pub size: Option<f64>,
     pub angle: Option<f64>,
+    pub canvas: (CanvasRenderingContext2d, HtmlCanvasElement)
+}
+#[derive(Clone)]
+pub struct Text {
+    pub x: f64,
+    pub y: f64,
+    pub size: f64,
+    #[allow(dead_code)] // this is anoying allow it for now
+    pub angle: Option<f64>,
+    //
+    pub text: String,
+    pub font: String,
+    pub color: String,
+    //
     pub canvas: (CanvasRenderingContext2d, HtmlCanvasElement)
 }

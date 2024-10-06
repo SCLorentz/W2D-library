@@ -3,7 +3,7 @@ use wasm_bindgen::closure::Closure;
 use web_sys::HtmlImageElement;
 use std::rc::Rc;
 
-pub use crate::values::Texture;
+pub use crate::values::{Texture, Text};
 
 impl Texture {
     //
@@ -87,32 +87,27 @@ impl Texture {
     }*/
 }
 
-/*impl Text {
-    pub fn new(x: f64, y: f64, text: String, size: Option<f64>, font: Option<String>, color: Option<String>) -> Self {
-        //
-        return Self {
-            x,
-            y,
-            text,
-            size: size.unwrap_or(100.0),
-            font: font.unwrap_or(String::from("Arial")),
-            color: color.unwrap_or(String::from("black")),
-        }
+impl Text {
+
+    pub fn new(value: Text) -> Self {
+        value
     }
 
-    /*pub fn to_string(&self) -> String {
+    #[allow(dead_code)]
+    pub fn to_string(&self) -> String {
         format!("Text {{ text: {}, size: {}, y: {}, x: {} }}", self.text, self.size, self.y, self.x)
-    }*/
+    }
     
-    pub fn create(&mut self) -> Result<HtmlCanvasElement, JsValue> {
+    pub fn create(&mut self) -> Result<Text, JsValue> {
         // get the canvas and context
-        let (context, canvas) = values();
+        let (context, _) = self.clone().canvas;
         // style
         context.set_font(format!("{}px {}", self.size, self.font).as_str());
         context.set_fill_style(&JsValue::from_str(self.color.clone().as_str()));
 
         context.begin_path();
         context.fill_text(&self.text, self.x, self.y).unwrap();
-        return Ok(canvas);
+        //
+        return Ok(self.clone());
     }
-}*/
+}

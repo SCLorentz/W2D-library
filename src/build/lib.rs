@@ -1,18 +1,18 @@
 // Todo: create a struct for the game, sprites, etc
 use wasm_bindgen::prelude::*;
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use web_sys::{/*js_sys::Object,*/ CanvasRenderingContext2d, HtmlCanvasElement};
 use std::collections::HashMap;
 /*use web_sys::CanvasRenderingContext2d;
 use std::f64;
 use web_sys::HtmlCanvasElement;
 use std::collections::HashMap;
 use js_sys::Reflect;*/
-//use web_sys::console;
+use web_sys::console;
 
 //use js_sys::Object;
 
 mod values;
-//use values::*;
+use values::*;
 
 mod sprites;
 use sprites::Texture;
@@ -276,25 +276,28 @@ impl Game {
     fn update(&mut self) {
         // set the bg color
         self.get_canvas_context().unwrap().save();
-        Self::set_bg_color(&mut self.clone(), self.bg_color.clone());
         // redraw sprites
-        // review: try do do a recursive function call, with an index of the values that need to be updated, for each call the index number is smaller
-        for (_, val) in self.data.clone() {
-            // get the sprite values
-            let texture = Texture {
-                x: val.x,
-                y: val.y,
-                texture: val.texture,
-                size: val.size,
-                angle: val.angle,
-                canvas: val.canvas,
-            };
-            // create the sprite
-            let mut sprite = Texture::new(texture.clone());
-            let _ = sprite.create();
-            //
-            //console::log_1(&JsValue::from_str(&texture.to_string()));
+        let v = self.data.clone().into_values().collect();
+        let _ = Self::reload_sprites(self, v);
+
+        Self::set_bg_color(&mut self.clone(), self.bg_color.clone());
+        //
+    }
+
+    fn reload_sprites(&mut self, mut vec: Vec<Texture>) -> Result<(), JsValue> {
+        //
+        if vec.is_empty() {
+            return Ok(());
         }
+        //
+        let first = vec.remove(0);
+        // create the sprite
+        let mut sprite = Texture::new(first);
+        let _ = sprite.create();
+        //
+        Self::reload_sprites(self, vec)?;
+        //
+        Ok(())
     }
 
     pub fn force_update(&mut self) {
@@ -332,9 +335,7 @@ impl Game {
         return self.clone()
     }
 
-    pub fn set_bg_color(&mut self, bg_color: String) -> Game {
-        //
-        self.bg_color = bg_color.clone();
+    pub fn set_bg_color(&mut self, bg_color: String) {
         //
         let element = Self::get_html_element(self).unwrap();
         let context = Self::get_canvas_context(self).unwrap();
@@ -345,8 +346,8 @@ impl Game {
 
         // Set a new background color
         context.fill_rect(0.0, 0.0, width, height);
-        //
-        return self.clone()
+
+        self.bg_color = bg_color;
     }
 
     pub fn create_sprite(&mut self, id: String, x: f64, y: f64, texture: String, size: Option<f64>, angle: Option<f64>) -> Game {
@@ -366,6 +367,26 @@ impl Game {
         let _ = sprite.create();
         //
         self.data.insert(id, sprite);
+        return self.clone()
+    }
+
+    pub fn draw_text(&mut self, text: String, x: f64, y: f64,  size: f64, font: Option<String>,) -> Game {
+        //
+        let canvas = (self.get_canvas_context().unwrap(), self.get_html_element().unwrap());
+        //
+        let value = Text {
+            x,
+            y,
+            font: font.unwrap_or(String::from("arial")),
+            color: String::from("white"),
+            size,
+            text,
+            angle: Some(0.0),
+            canvas
+        };
+        //
+        let mut text = Text::new(value);
+        let _ = text.create().unwrap();
         //
         return self.clone()
     }
@@ -376,12 +397,16 @@ impl Game {
         return vec![canvas.width(), canvas.height()]
     }
 
-    pub fn update_sprite_value(&mut self, name: &str) {
+    pub fn update_sprite_value(&mut self, name: &str, x: f64) {
+        //
+        console::log_1(&JsValue::from_str(&x.to_string()));
         // get the sprite
         if let Some(estrutura) = self.data.get_mut(name) {
-            estrutura.clone().x = 11.0;
+            //console::log_1(&JsValue::from_str(estrutura.x.to_string().as_str()));
+            //
+            estrutura.x = x;
             return;
         }
-        //console::log_1(&JsValue::from_str("sprite not found!"));
+        console::log_1(&JsValue::from_str("sprite not found!"));
     }
 }
