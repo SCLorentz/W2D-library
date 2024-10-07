@@ -26,7 +26,7 @@ obj.new_image(
 
 //obj.new_text("Hello world", "600.0", "250.0", "100.0")
 
-console.log(obj.get_sprite_by_id("dino"))
+//console.log(obj.get_sprite_by_id("dino"))
 
 window.addEventListener("click", () => {
     obj.update_sprite_value("buzz", "650.0", "250.0");

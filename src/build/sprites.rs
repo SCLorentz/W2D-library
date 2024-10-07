@@ -6,11 +6,9 @@ use std::rc::Rc;
 pub use crate::values::Sprite;
 use crate::{Image, Kind, Text};
 
-impl Sprite {
-    //
-    pub fn new(value: Sprite) -> Self {
-        value
-    }
+impl Sprite
+{
+    pub fn new(value: Sprite) -> Self { value }
 
     #[allow(dead_code)]
     pub fn to_string(&self) -> String {
@@ -18,30 +16,28 @@ impl Sprite {
         let (x, y) = self.pos;
         match &self.kind {
             Kind::Image(image) => format!("Image {{ texture: {:?}, size: {:?}, x: {}, y: {} }}", image.path, self.size, x, y),
-            Kind::Text(text) => format!("Text {{ value: {:?}, color: {:?}, x: {}, y: {} }}", text.value, text.color, x, y)
+            Kind::Text(text) => format!("Text {{ value: {:?}, color: {:?}, font: {:?}, x: {}, y: {} }}", text.value, text.color, text.font, x, y),
         }
     }
 
-    pub fn render(&mut self) -> Result<(), JsValue> {
+    pub fn render(&mut self) -> Result<(), JsValue>
+    {
         match &self.kind {
             Kind::Image(image) => {
                 Self::create_image(self, image.clone())?;
-                //
-                return Ok(());
+                Ok(())
             }
             Kind::Text(text) => {
                 Self::create_text(self, text.clone())?;
-                //
-                return Ok(());
+                Ok(())
             }
         }
     }
     
-    pub fn create_image(&mut self, image: Image) -> Result<Sprite, JsValue> {
-        // get the canvas and context
+    pub fn create_image(&mut self, image: Image) -> Result<Sprite, JsValue>
+    {
         let (context, _) = self.clone().canvas;
         let (x, y) = self.pos;
-
         let image_path = image.path;
 
         // create a new image
@@ -84,11 +80,11 @@ impl Sprite {
         image.set_onload(Some(closure.as_ref().unchecked_ref()));
         closure.forget();
 
-        return Ok(self.clone());
+        Ok(self.clone())
     }
 
-    pub fn create_text(&mut self, text: Text) -> Result<Sprite, JsValue> {
-        // get the canvas and context
+    pub fn create_text(&mut self, text: Text) -> Result<Sprite, JsValue>
+    {
         let (x, y) = self.pos;
         let (context, _) = self.clone().canvas;
         // style
@@ -98,6 +94,6 @@ impl Sprite {
         context.begin_path();
         context.fill_text(&text.value, x, y).unwrap();
         //
-        return Ok(self.clone());
+        Ok(self.clone())
     }
 }

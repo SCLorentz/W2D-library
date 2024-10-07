@@ -2,7 +2,7 @@
 name = "plain_render_lib"
 version = "0.1.0"
 edition = "2021"
-authors = ["Your Name <113468900+SCLorentz@users.noreply.github.com>"]
+authors = ["S.C. Lorentz <113468900+SCLorentz@users.noreply.github.com>"]
 description = "A chrome dino game clone made with JS and WASM"
 repository = "https://github.com/yourgithubusername/hello-wasm"
 
