@@ -70,11 +70,11 @@ impl Game
     {
         // set the bg color
         self.get_canvas_context().save();
-        // redraw sprites
+        // background appears in the first layer 
+        Self::set_bg_color(&mut self.clone(), self.background.clone())?;
+        // redraw sprites, sprites appears in the second layer
         let v = self.data.clone().into_values().collect();
         Self::reload_sprites(self, v)?;
-
-        Self::set_bg_color(&mut self.clone(), self.background.clone())?;
         //
         Ok(())
     }
@@ -209,7 +209,7 @@ impl Game
         Ok(self.to_owned())
     }
 
-    pub fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String) -> Result<Game, JsValue>
+    pub fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String, size: Option<f64>) -> Result<Game, JsValue>
     {
         let canvas = (self.get_canvas_context(), self.get_html_element());
         let kind = Kind::Text( Text { value, color, font });
@@ -217,7 +217,7 @@ impl Game
         let mut sprite = Sprite::new( Sprite {
             kind,
             pos: (x, y),
-            size: None,
+            size,
             angle: None,
             canvas
         });

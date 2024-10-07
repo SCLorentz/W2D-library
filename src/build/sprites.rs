@@ -3,6 +3,8 @@ use wasm_bindgen::closure::Closure;
 use web_sys::HtmlImageElement;
 use std::rc::Rc;
 
+//use web_sys::console;
+
 pub use crate::values::Sprite;
 use crate::{Image, Kind, Text};
 
@@ -38,13 +40,13 @@ impl Sprite
     {
         let (context, _) = self.clone().canvas;
         let (x, y) = self.pos;
-        let image_path = image.path;
+        let path = image.path;
 
         // create a new image
         let image = Rc::new(HtmlImageElement::new().unwrap());
         let image_clone = image.clone();
         //
-        image.set_src(&String::from(image_path));
+        image.set_src(&String::from(path));
         // some values. This are needed cause the closure requests them
         let (img_h, img_w, dx, dy, size, angle) = ( 
             image.height() as f64,
@@ -86,7 +88,7 @@ impl Sprite
     pub fn create_text(&mut self, text: Text) -> Result<Sprite, JsValue>
     {
         let (x, y) = self.pos;
-        let (context, _) = self.clone().canvas;
+        let (context, _) = self.to_owned().canvas;
         // style
         context.set_font(format!("{}px {}", self.size.unwrap_or(100.0), text.font).as_str());
         context.set_fill_style(&JsValue::from_str(text.color.as_str()));

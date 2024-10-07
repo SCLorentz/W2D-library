@@ -27,7 +27,8 @@ obj.new_image(
 
 // Todo: Add a function that make pixelated render less blurry
 
-//obj.new_text("Hello world", "600.0", "250.0", "100.0") <-- not working
+obj.new_text("hw", "600.0", "800.0", "Hello world", "red", "Roboto", "50.0")
+//id: String, x: f64, y: f64, value: String, color: String, font: String
 
 //console.log(obj.get_sprite_by_id("dino")) < -- not working
 
