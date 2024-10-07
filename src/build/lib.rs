@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
-use std::collections::HashMap;
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement};
+use std::{collections::HashMap, rc::Rc};
 //use web_sys::console;
 
 mod values;
@@ -14,8 +14,8 @@ use sprites::Sprite;
 pub struct Game {
     html_element: Option<HtmlCanvasElement>,
     canvas_context: Option<CanvasRenderingContext2d>,
-    bg_color: String,
-    // Todo: transform this in a map
+    background: String,
+    //
     data: HashMap<String, Sprite>,                                     // this is where the sprites and texts will be saved
     custom_values: HashMap<String, String>                             // This is where the custom values created by the user of the lib will be saved
 }
@@ -30,7 +30,7 @@ impl Game
     { Game {
         html_element: None,
         canvas_context: None,
-        bg_color: String::from("white"),
+        background: String::from("white"),
         data: HashMap::new(),
         custom_values: HashMap::new()
     }}
@@ -74,7 +74,7 @@ impl Game
         let v = self.data.clone().into_values().collect();
         Self::reload_sprites(self, v)?;
 
-        Self::set_bg_color(&mut self.clone(), self.bg_color.clone())?;
+        Self::set_bg_color(&mut self.clone(), self.background.clone())?;
         //
         Ok(())
     }
@@ -144,7 +144,47 @@ impl Game
         // Set a new background color
         context.fill_rect(0.0, 0.0, width, height);
 
-        self.bg_color = bg_color;
+        self.background = bg_color;
+        //
+        Ok(self.to_owned())
+    }
+
+    pub fn set_bg_image(&mut self, path: String) -> Result<Game, JsValue>
+    {
+        let context = Self::get_canvas_context(self);
+        //
+        let (w, h) = Self::get_window_proportions();
+        let width = w as f64;
+        let height = h as f64;
+
+        let image = Rc::new(HtmlImageElement::new().unwrap());
+        let image_clone = image.clone();
+        //
+        image.set_src(&String::from(path.clone()));
+        // some values. This are needed cause the closure requests them
+        let (dx, dy) = ( 
+            width / 2.0,
+            height / 2.0,
+        );
+
+        // Esperar o carregamento da imagem
+        let closure = Closure::wrap(Box::new(move || {
+            // Translate to the center of where the image will be
+            context.translate(dx + width / 2.0, dy + height / 2.0).unwrap();
+            // Draw the image centered at (0, 0)
+            context.draw_image_with_html_image_element_and_dw_and_dh(
+                &image_clone, 
+                -width / 2.0, 
+                -height / 2.0, 
+                width, 
+                height
+            ).unwrap();
+            
+        }) as Box<dyn FnMut()>);
+        //
+        image.set_onload(Some(closure.as_ref().unchecked_ref()));
+
+        self.background = path;
         //
         Ok(self.to_owned())
     }
