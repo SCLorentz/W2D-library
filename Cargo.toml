@@ -29,6 +29,7 @@ features = [
   'CanvasRenderingContext2d',
   'HtmlImageElement',
   'console',
+  'fontface',
 ]
 
 [profile.release]
