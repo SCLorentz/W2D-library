@@ -85,7 +85,7 @@ impl Sprite
         Ok(self.clone())
     }
 
-    pub async fn web_sys_fontface_load() 
+    /*pub async fn web_sys_fontface_load() 
     {
         let window = web_sys::window().expect("global window does not exists");    
         let document = window.document().expect("expecting a document on window");
@@ -94,15 +94,14 @@ impl Sprite
         let promise= fontface.load().unwrap();
         let _result= wasm_bindgen_futures::JsFuture::from(promise).await;
         document.fonts().add(&fontface).unwrap();
-    }
+    }*/
 
-    pub async fn create_text(&mut self, text: Text) -> Result<Sprite, JsValue>
+    pub fn create_text(&mut self, text: Text) -> Result<Sprite, JsValue>
     {
         let (x, y) = self.pos;
         let (context, _) = self.to_owned().canvas;
         // style
-        web_sys_fontface_load().await;
-        //context.set_font(format!("{}px {}", self.size.unwrap_or(100.0), text.font).as_str());
+        context.set_font(format!("{}px {}", self.size.unwrap_or(100.0), text.font).as_str());
         context.set_fill_style(&JsValue::from_str(text.color.as_str()));
 
         context.begin_path();
