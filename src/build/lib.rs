@@ -1,3 +1,4 @@
+//use serde::de::value::Error;
 use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement};
 use std::{collections::HashMap, rc::Rc};
@@ -38,16 +39,21 @@ impl Game
     #[wasm_bindgen]
     pub fn inicialize(&mut self) -> Result<Game, JsValue>
     {
+        // check if the canvas was already created
+        if self.html_element.is_some() {
+            return Ok(self.to_owned())
+        }
+        //
         let window = web_sys::window().expect("no global `window` exists");
         let document = window.document().expect("should have a document on window");
         let body = document.body().expect("document should have a body");
 
-        let e = document.create_element("canvas")?;
+        let canvas = document.create_element("canvas")?;
 
-        body.append_child(&e)?;
+        body.append_child(&canvas)?;
 
         // draw the canvas
-        let element: web_sys::HtmlCanvasElement = e.clone()
+        let element: web_sys::HtmlCanvasElement = canvas
             .dyn_into::<web_sys::HtmlCanvasElement>()
             .map_err(|_| ())
             .unwrap();
@@ -111,12 +117,12 @@ impl Game
         self.canvas_context.to_owned().unwrap()
     }
 
-    fn get_window_proportions() -> (u32, u32)
+    fn get_window_proportions() -> (f64, f64)
     {(
-        web_sys::window().expect("no global `window` exists").inner_width().unwrap().as_f64().unwrap() as u32,
-        web_sys::window().expect("no global `window` exists").inner_height().unwrap().as_f64().unwrap() as u32,
+        web_sys::window().expect(&ErrorTypes::NoGlobalWindow.to_string()).inner_width().unwrap_or_default().as_f64().unwrap(),
+        web_sys::window().expect(&ErrorTypes::NoGlobalWindow.to_string()).inner_height().unwrap_or_default().as_f64().unwrap()
     )}
-
+    
     pub fn resize_canvas(&mut self) -> Result<Game, JsValue>
     {
         let canvas = Self::get_html_element(self);
@@ -124,8 +130,8 @@ impl Game
         let (window_width, window_height) = Self::get_window_proportions();
         
         // Resize the canvas
-        canvas.set_width(window_width);
-        canvas.set_height(window_height);
+        canvas.set_width(window_width as u32);
+        canvas.set_height(window_height as u32);
 
         Self::update(&mut self.clone())?;
         //
@@ -153,9 +159,7 @@ impl Game
     {
         let context = Self::get_canvas_context(self);
         //
-        let (w, h) = Self::get_window_proportions();
-        let width = w as f64;
-        let height = h as f64;
+        let (width, height) = Self::get_window_proportions();
 
         let image = Rc::new(HtmlImageElement::new().unwrap());
         let image_clone = image.clone();
