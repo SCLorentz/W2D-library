@@ -4,7 +4,7 @@ wasm-pack build --target web --out-dir ./src/frontend/script
 #wasm-opt -Os ./public/script/chrome_dino_game_bg.wasm -o ./public/script/chrome_dino_game_bg.wasm
 echo "Done!"
 
-cd ./src
+cd ./src/backend/selfhost
 
 # go build
 echo "Building server..."

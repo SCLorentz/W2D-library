@@ -1,16 +1,14 @@
-//https://www.digitalocean.com/community/tutorials/how-to-make-an-http-server-in-go
-//https://blog.logrocket.com/creating-a-web-server-with-golang/
-
 package main
 
+// this is the server backend, made to be used automaticly by hosting servers
+
 import (
-	"fmt"
 	"net/http"
 	"log"
 )
 
 /*func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) error {
-	File := "../frontend/" + path
+	File := "../../frontend/" + path
 	// Verifica se o cliente aceita compressão Gzip
 	if !isGzipAccepted(r) {
 		//http.Error(w, "Not Acceptable", http.StatusNotAcceptable) // err 406
@@ -55,12 +53,9 @@ import (
 }*/
 
 func main() {
-    fmt.Println("The server has started successfully in http://localhost:8080")
-	// file handle
-	fileServer := http.FileServer(http.Dir("./frontend"))
-    http.Handle("/", fileServer)
+    http.Handle("/", http.FileServer(http.Dir("../../frontend")))
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":80", nil); err != nil {
         log.Fatal(err)
     }
 }
