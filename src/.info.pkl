@@ -1,6 +1,6 @@
 name = "chrome-dino-game"
 version = "0.1.0"
-description = "A simple dino game written in rust and go"
+description = "A simple dino game, written using my own 2D library"
 //
 author = "SCLorentz"
 author_email = "113468900+SCLorentz@users.noreply.github.com"

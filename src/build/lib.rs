@@ -1,8 +1,9 @@
 //use serde::de::value::Error;
 use wasm_bindgen::prelude::*;
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement};
+use web_sys::{CanvasRenderingContext2d, Document, HtmlCanvasElement, HtmlElement, HtmlImageElement, Window};
 use std::{collections::HashMap, rc::Rc};
 //use web_sys::console;
+//use std::time::{Instant, Duration};
 
 mod values;
 use values::*;
@@ -13,12 +14,21 @@ use sprites::Sprite;
 #[wasm_bindgen]
 #[derive(Clone)]
 pub struct Game {
+    // fps
+    #[allow(dead_code)]
+    fps: u32,
+    //last_update: Instant,
+    // html canvas
     html_element: Option<HtmlCanvasElement>,
     canvas_context: Option<CanvasRenderingContext2d>,
     background: String,
-    //
+    // values
     data: HashMap<String, Sprite>,                                     // this is where the sprites and texts will be saved
-    custom_values: HashMap<String, String>                             // This is where the custom values created by the user of the lib will be saved
+    custom_values: HashMap<String, String>,                            // This is where the custom values created by the user of the lib will be saved
+    // html
+    window: Window,
+    document: Document,
+    body: HtmlElement
 }
 
 // Todo: create a different list containing only the sprites that are beeing rendered and exclude the ones that aren't visible
@@ -27,14 +37,29 @@ pub struct Game {
 impl Game
 {
     #[wasm_bindgen(constructor)]
-    pub fn new() -> Game
-    { Game {
-        html_element: None,
-        canvas_context: None,
-        background: String::from("white"),
-        data: HashMap::new(),
-        custom_values: HashMap::new()
-    }}
+    pub fn new() -> Self
+    {
+        let expect_window = ErrorTypes::NoGlobalWindow.to_string();
+        //
+        let window = web_sys::window().expect(&expect_window);
+        let document = window.document().expect("should have a document on window");
+        let body = document.body().expect("document should have a body");
+        //
+        Self {
+            html_element: None,
+            canvas_context: None,
+            background: String::from("white"),
+            data: HashMap::new(),
+            custom_values: HashMap::new(),
+            //
+            fps: 60,
+            //last_update: Instant::now(),
+            //
+            window,
+            document,
+            body
+        }
+    }
 
     #[wasm_bindgen]
     pub fn inicialize(&mut self) -> Result<Game, JsValue>
@@ -43,14 +68,10 @@ impl Game
         if self.html_element.is_some() {
             return Ok(self.to_owned())
         }
-        //
-        let window = web_sys::window().expect("no global `window` exists");
-        let document = window.document().expect("should have a document on window");
-        let body = document.body().expect("document should have a body");
 
-        let canvas = document.create_element("canvas")?;
+        let canvas = self.document.create_element("canvas")?;
 
-        body.append_child(&canvas)?;
+        self.body.append_child(&canvas)?;
 
         // draw the canvas
         let element: web_sys::HtmlCanvasElement = canvas
@@ -73,6 +94,7 @@ impl Game
     }
 
     fn update(&mut self) -> Result<(), JsValue>
+    // I need to create a way of update this with fps, ideas on 'broken.rs'
     {
         // set the bg color
         self.get_canvas_context().save();
@@ -117,17 +139,17 @@ impl Game
         self.canvas_context.to_owned().unwrap()
     }
 
-    fn get_window_proportions() -> (f64, f64)
+    fn get_window_proportions(&mut self) -> (f64, f64)
     {(
-        web_sys::window().expect(&ErrorTypes::NoGlobalWindow.to_string()).inner_width().unwrap_or_default().as_f64().unwrap(),
-        web_sys::window().expect(&ErrorTypes::NoGlobalWindow.to_string()).inner_height().unwrap_or_default().as_f64().unwrap()
+        self.window.inner_width().unwrap_or_default().as_f64().unwrap(),
+        self.window.inner_height().unwrap_or_default().as_f64().unwrap()
     )}
     
     pub fn resize_canvas(&mut self) -> Result<Game, JsValue>
     {
         let canvas = Self::get_html_element(self);
         // Get the window proportions
-        let (window_width, window_height) = Self::get_window_proportions();
+        let (window_width, window_height) = Self::get_window_proportions(self);
         
         // Resize the canvas
         canvas.set_width(window_width as u32);
@@ -159,7 +181,7 @@ impl Game
     {
         let context = Self::get_canvas_context(self);
         //
-        let (width, height) = Self::get_window_proportions();
+        let (width, height) = Self::get_window_proportions(self);
 
         let image = Rc::new(HtmlImageElement::new().unwrap());
         let image_clone = image.clone();
