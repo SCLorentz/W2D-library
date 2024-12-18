@@ -31,7 +31,7 @@ pub struct Game {
     body: HtmlElement
 }
 
-// Todo: create a different list containing only the sprites that are beeing rendered and exclude the ones that aren't visible
+// Todo: create a different list containing only the sprites that are being rendered and exclude the ones that aren't visible
 
 #[wasm_bindgen]
 impl Game
@@ -94,7 +94,7 @@ impl Game
     }
 
     fn update(&mut self) -> Result<(), JsValue>
-    // I need to create a way of update this with fps, ideas on 'broken.rs'
+    // I need to create a way of updating this with fps, ideas on 'broken.rs'
     {
         // set the bg color
         self.get_canvas_context().save();
@@ -144,17 +144,39 @@ impl Game
         self.window.inner_width().unwrap_or_default().as_f64().unwrap(),
         self.window.inner_height().unwrap_or_default().as_f64().unwrap()
     )}
-    
+
     pub fn resize_canvas(&mut self) -> Result<Game, JsValue>
     {
         let canvas = Self::get_html_element(self);
         // Get the window proportions
         let (window_width, window_height) = Self::get_window_proportions(self);
+
+        // Set the desired aspect ratio
+        let aspect_ratio = 16.0 / 9.0;
+        let (new_width, new_height);
+
+        // Calculate new dimensions while maintaining aspect ratio
+        if window_width / window_height > aspect_ratio {
+            new_width = (window_height * aspect_ratio).min(window_width);
+            new_height = window_height;
+        } else {
+            new_width = window_width;
+            new_height = (window_width / aspect_ratio).min(window_height);
+        }
         
         // Resize the canvas
-        canvas.set_width(window_width as u32);
-        canvas.set_height(window_height as u32);
+        canvas.set_width(new_width as u32);
+        canvas.set_height(new_height as u32);
 
+        // Get the 2D context of the canvas
+        let context = canvas.get_context("2d")?.unwrap();
+        let context_2d = context.dyn_into::<web_sys::CanvasRenderingContext2d>()?;
+
+        // Fill the canvas background to avoid white bands
+        context_2d.set_fill_style(&JsValue::from_str("black")); // In the future that color will probably have to change...
+        context_2d.fill_rect(0.0, 0.0, new_width, new_height);
+
+        // Update game after resizing
         Self::update(&mut self.clone())?;
         //
         Ok(self.to_owned())
@@ -193,7 +215,7 @@ impl Game
             height / 2.0,
         );
 
-        // Esperar o carregamento da imagem
+        // Wait for the image to load
         let closure = Closure::wrap(Box::new(move || {
             // Translate to the center of where the image will be
             context.translate(dx + width / 2.0, dy + height / 2.0).unwrap();
@@ -235,23 +257,30 @@ impl Game
         Ok(self.to_owned())
     }
 
-    pub fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String, size: Option<f64>) -> Result<Game, JsValue>
-    {
+    pub fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String, size: Option<f64>) -> Result<Game, JsValue> {
         let canvas = (self.get_canvas_context(), self.get_html_element());
-        let kind = Kind::Text( Text { value, color, font });
-        // create sprite
-        let mut sprite = Sprite::new( Sprite {
+        let font_with_size = format!("{}px {}", size.unwrap_or(16.0), font.clone());
+        let kind = Kind::Text(Text { value: value.clone(), color: color.clone(), font: font_with_size.clone() });
+
+        let context = self.get_canvas_context();
+        context.set_font(&font_with_size);
+        context.set_fill_style(&color.clone().into());
+
+        let mut sprite = Sprite::new(Sprite {
             kind,
             pos: (x, y),
             size,
             angle: None,
             canvas
         });
+
         sprite.render()?;
-        //
+
         self.data.insert(id, sprite);
+
         Ok(self.to_owned())
     }
+
 
     pub fn get_canvas_size(&mut self) -> Vec<u32>
     {

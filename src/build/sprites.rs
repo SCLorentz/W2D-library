@@ -79,7 +79,7 @@ impl Sprite
             context.restore();
         }) as Box<dyn FnMut()>);
         //
-        image.set_onload(Some(closure.as_ref().unchecked_ref()));  // I need to delay this to make shure that the image is loaded
+        image.set_onload(Some(closure.as_ref().unchecked_ref()));  // I need to delay this to make sure that the image is loaded
         closure.forget();
 
         Ok(self.clone())
