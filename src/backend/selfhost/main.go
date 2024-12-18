@@ -6,18 +6,25 @@ package main
 // this is the fancy backend, made to be used with the terminal in the devcontainer
 
 import (
-	"fmt"
 	"net/http"
 	"log"
+	"os"
 )
 
 func main() {
-    fmt.Println("The server has started successfully in http://localhost:8080")
-	// file handle
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // valor padrão
+	}
+
+    log.Printf("The server has successfully initialized at http://localhost:8080:%s\n", port)
+
+	// File handler
 	fileServer := http.FileServer(http.Dir("../../frontend"))
     http.Handle("/", fileServer)
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-        log.Fatal(err)
+	// Start the server
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+        log.Printf("Error initializing the server: %v\n", err)
     }
 }
