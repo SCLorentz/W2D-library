@@ -6,11 +6,11 @@
 By <a href="//commons.wikimedia.org/w/index.php?title=User:Carlosbaraza&action=edit&redlink=1" class="new" title="User:Carlosbaraza (page does not exist)">Carlos Baraza</a> - <span class="int-own-work" lang="en">Own work</span> / <a rel="nofollow" class="external free" href="https://github.com/carlosbaraza/web-assembly-logo">https://github.com/carlosbaraza/web-assembly-logo</a>, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" title="Creative Commons Zero, Public Domain Dedication">CC0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=56494100">Link</a>
 
 <hr>
-Have you ever played the google chrome dino game? This is my own version of it, developed in rust using the WASM (web assembly) technology.
+Have you ever played the Google Chrome dino game? This is my own version of it, developed in Rust using the WASM (web assembly) technology.
 
 ## Develop by your own
 
-### My recomendations - Docker
+### My recommendations - Docker
 
 If you want to develop your own version of this game, you should get docker installed, so you don't have to worry about configuring anything or make sure that this will work on your machine, is everything already configured for you. Besides, in a virtualized environment, errors like "it works on my machine" can be avoidable. I made this to be really simple to just "enter and use" with no need for configuration.
 
@@ -24,9 +24,7 @@ To start the server, use: `run`, this command will make sure that everything nec
 
 ## Game Aesthetics
 
-- The game must be in black and white
 - The textures in pixel art style
-- No size variation of the same texture, size variation requires a new texture
 - No fancy pause menu, just an ESC key that unpauses the game
 - Score and life info must be in the right bottom corner
 - No fancy physics
@@ -37,7 +35,7 @@ To start the server, use: `run`, this command will make sure that everything nec
 
 ## Todo
 
-Those are some stuff that I think that would be cool to add in this project
+Those are some stuff that I think would be cool to add to this project
 
 * [ ]  Set the start time (day/night) of the game to the equivalent of the user's theme
 * [ ]  Create a grid to prevent impossible situations for the player, making the game playable
