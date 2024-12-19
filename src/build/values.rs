@@ -1,6 +1,13 @@
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use web_sys::{
+    CanvasRenderingContext2d, 
+    HtmlCanvasElement
+};
 use serde::Serialize;
-use std::fmt::{Display, Formatter, Result};
+use std::fmt::{
+    Display, 
+    Formatter, 
+    Result
+};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Image {

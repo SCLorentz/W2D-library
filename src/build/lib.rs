@@ -1,12 +1,20 @@
-//use serde::de::value::Error;
-use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::JsFuture;
-use web_sys::{CanvasRenderingContext2d, Document, HtmlCanvasElement, HtmlElement, HtmlImageElement, Window};
 use js_sys;
-use js_sys::Promise;
-use std::{collections::HashMap, rc::Rc};
-//use web_sys::console;
-//use std::time::{Instant, Duration};
+use std::{
+    collections::HashMap,
+    rc::Rc,
+};
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsValue;
+use wasm_bindgen_futures::JsFuture;
+use web_sys::{
+    CanvasRenderingContext2d,
+    Document,
+    HtmlCanvasElement,
+    HtmlElement,
+    HtmlImageElement,
+    Window,
+};
+
 
 mod values;
 use values::*;
@@ -252,19 +260,35 @@ impl Game
         Ok(self.to_owned())
     }
 
-    pub async fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String, size: Option<f64>) -> Result<Game, JsValue> 
-    {
+    pub async fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String, size: Option<f64>) -> Result<Game, JsValue> {
         let canvas = (self.get_canvas_context(), self.get_html_element());
         let font_with_size = format!("{}px {}", size.unwrap_or(16.0), font.clone());
 
-        // Criar a promessa para o carregamento da fonte (simulação)
-        let promise: Promise = js_sys::Promise::resolve(&JsValue::from_str("Font loading"));
-        let future = JsFuture::from(promise);
+        // Load the font using a Fonts API
+        // It allows you to load fonts asynchronously and check if they are available
+        let font_face = format!("{} {}", size.unwrap_or(16.0), font);
+        let load_promise = js_sys::Promise::resolve(&JsValue::from_str(&font_face));
 
-        // Esperar o carregamento da fonte
-        future.await.unwrap();
+        // Create a closure for then
+        let resolve_closure = Closure::wrap(Box::new(move |_: JsValue| {
+            // Additional logic if necessary - for more customizable texts IDK
+            // Don't return anything, just execute the logic
+        }) as Box<dyn FnMut(JsValue)>);
 
-        // Depois que a fonte é carregada, definimos o estilo
+        // Create a closure for catch
+        let reject_closure = Closure::wrap(Box::new(move |err: JsValue| {
+            // You can add logic to handle errors if necessary
+            // Don't return anything, just execute the logic
+        }) as Box<dyn FnMut(JsValue)>);
+
+        // Use closures with promise
+        load_promise.then(&resolve_closure).catch(&reject_closure);
+
+        // Wait for the font to load
+        let future = JsFuture::from(load_promise);
+        future.await?;
+
+        // Set the font style
         let context = self.get_canvas_context();
         context.set_font(&font_with_size);
         context.set_fill_style(&color.clone().into());
@@ -280,8 +304,6 @@ impl Game
         });
 
         sprite.render()?;
-
-        // Inserir o sprite no jogo
         self.data.insert(id, sprite);
 
         Ok(self.to_owned())

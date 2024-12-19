@@ -1,7 +1,7 @@
-# Alias para ls -la
+# Alias for ls -la
 alias ll='ls -la'
 
-# Mudar a cor do prompt (para Bash, usando cores ANSI)
+# Change prompt color (for Bash, using ANSI colors)
 PS1='\[\e[38;5;41m\]\w\[\e[0m\]\\$ '
 
 run() {
