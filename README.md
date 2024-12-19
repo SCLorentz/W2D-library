@@ -23,9 +23,7 @@ To start the server, use: `run`, this command will make shure that everything ne
 
 ## Game Aesthetics
 
-- The game must be in black and white
 - The textures in pixel art style
-- No size variation of the same texture, size variation require a new texture
 - No fancy pause menu, just a 'esc' button that unpause the game
 - Score and life info must be in the right bottom corner
 - No fancy physics
