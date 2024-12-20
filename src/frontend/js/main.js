@@ -1,6 +1,16 @@
 import init, { Game } from "/script/plain_render_lib.js";
 await init()
 
+const font = new FontFace('MyFont', 'url(/path/to/font.woff2)');
+
+font.load().then(function(loadedFont) {
+    document.fonts.add(loadedFont);
+    console.log('Font loaded!');
+}).catch(function(error) {
+    console.error('Font failed to load:', error);
+});
+
+
 const obj = new Game();
 //
 obj.inicialize();
@@ -20,14 +30,14 @@ obj.new_image(
     "dino",     // id
     "500.0",    // x
     "100.0",    // y
-    "/assets/base/player.png",  // path
+    "../static/assets/base/player.png",  // path
     "200.0",    // size
     "180.0"     // angle
 )
 
-// Todo: Add a function that make pixelated render less blurry
+// Todo: Add a function that makes pixelated render less blurry
 
-obj.new_text("hw", "600.0", "800.0", "Hello world", "red", "Roboto", "50.0")
+obj.new_text("hw", "600.0", "800.0", "Hello world", "red", "Roboto", "50.0");
 //id: String, x: f64, y: f64, value: String, color: String, font: String
 
 //console.log(obj.get_sprite_by_id("dino")) < -- not working
@@ -37,4 +47,4 @@ window.addEventListener("click", () => {
     obj.force_update();
 })
 
-window.addEventListener("resize", () => obj.resize_canvas())
+window.addEventListener("resize", () => obj.resize_canvas());

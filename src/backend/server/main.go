@@ -1,22 +1,23 @@
 package main
 
-// this is the server backend, made to be used automaticly by hosting servers
+// This is the server backend, made to be used automatically by hosting servers
 
 import (
 	"net/http"
 	"log"
 )
 
-/*func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) error {
+/*
+func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) error {
 	File := "../../frontend/" + path
-	// Verifica se o cliente aceita compressão Gzip
+	// Checks if the client supports Gzip compression
 	if !isGzipAccepted(r) {
 		//http.Error(w, "Not Acceptable", http.StatusNotAcceptable) // err 406
 		send(path, w, mime)
-		return errors.New("not acceptable! Sending uncompressed file")
+		return errors.New("Not acceptable! Sending uncompressed file")
 	}
 
-	// Cria um escritor gzip
+	// Create a gzip writer
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", mime)
 	gz := gzip.NewWriter(w)
@@ -27,13 +28,13 @@ import (
 
 	if !exist {
 		send(path, w, mime)
-		return errors.New("file not found! Trying to send uncompressed file")
+		return errors.New("File not found! Trying to send uncompressed file")
 	}
 
-	// Abre o arquivo HTML
-	file, err := os.Open(File) // todo: create a better way to do this
+	// Open the HTML file
+	file, err := os.Open(File) // TODO: create a better way to do this
 	if err != nil {
-		return_err := errors.New("error opening the file")
+		return_err := errors.New("Error opening the file")
 		//
 		config.Err(w, 500, return_err)
 		return return_err
@@ -41,16 +42,17 @@ import (
 	defer file.Close()
 	//file, _, _ := config.ReadFile(File);
 
-	// Copia o conteúdo do arquivo para o escritor Gzip
+	// Copy file contents to Gzip writer
 	_, err = io.Copy(gz, file)
 	if err != nil {
-		return_err := errors.New("error copying the content")
+		return_err := errors.New("Error copying the content")
 		//
 		config.Err(w, 500, return_err)
 		return return_err
 	}
 	return nil
-}*/
+}
+*/
 
 func main() {
     http.Handle("/", http.FileServer(http.Dir("../../frontend")))

@@ -17,7 +17,6 @@
 			// preinstalled extensions for vscode
 			"extensions": [
 				"eamodio.gitlens",
-				"seepine.md-editor",
 				"PKief.material-icon-theme",
 				"kisstkondoros.vscode-gutter-preview",
 				"golang.go",

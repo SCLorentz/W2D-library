@@ -1,9 +1,20 @@
-//use serde::de::value::Error;
+use js_sys;
+use std::{
+    collections::HashMap,
+    rc::Rc,
+};
 use wasm_bindgen::prelude::*;
-use web_sys::{CanvasRenderingContext2d, Document, HtmlCanvasElement, HtmlElement, HtmlImageElement, Window};
-use std::{collections::HashMap, rc::Rc};
-//use web_sys::console;
-//use std::time::{Instant, Duration};
+use wasm_bindgen::JsValue;
+use wasm_bindgen_futures::JsFuture;
+use web_sys::{
+    CanvasRenderingContext2d,
+    Document,
+    HtmlCanvasElement,
+    HtmlElement,
+    HtmlImageElement,
+    Window,
+};
+
 
 mod values;
 use values::*;
@@ -15,7 +26,6 @@ use sprites::Sprite;
 #[derive(Clone)]
 pub struct Game {
     // fps
-    #[allow(dead_code)]
     fps: u32,
     //last_update: Instant,
     // html canvas
@@ -31,7 +41,7 @@ pub struct Game {
     body: HtmlElement
 }
 
-// Todo: create a different list containing only the sprites that are beeing rendered and exclude the ones that aren't visible
+// Todo: create a different list containing only the sprites that are being rendered and exclude the ones that aren't visible
 
 #[wasm_bindgen]
 impl Game
@@ -39,7 +49,7 @@ impl Game
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self
     {
-        let expect_window = ErrorTypes::NoGlobalWindow.to_string();
+        let expect_window = "No global window".to_string();
         //
         let window = web_sys::window().expect(&expect_window);
         let document = window.document().expect("should have a document on window");
@@ -64,37 +74,30 @@ impl Game
     #[wasm_bindgen]
     pub fn inicialize(&mut self) -> Result<Game, JsValue>
     {
-        // check if the canvas was already created
         if self.html_element.is_some() {
-            return Ok(self.to_owned())
+            return Ok(self.to_owned());
         }
-
+    
         let canvas = self.document.create_element("canvas")?;
-
         self.body.append_child(&canvas)?;
-
-        // draw the canvas
-        let element: web_sys::HtmlCanvasElement = canvas
-            .dyn_into::<web_sys::HtmlCanvasElement>()
-            .map_err(|_| ())
-            .unwrap();
-
+    
+        let element: web_sys::HtmlCanvasElement = canvas.dyn_into::<web_sys::HtmlCanvasElement>()
+            .map_err(|_| JsValue::from_str("Failed to cast canvas"))?;
+    
         self.html_element = Some(element.clone());
-
-        let context = element
-            .get_context("2d")
+    
+        let context = element.get_context("2d")
             .map_err(|_| JsValue::from_str("Failed to get context"))?
             .ok_or_else(|| JsValue::from_str("Context is null"))?
             .dyn_into::<web_sys::CanvasRenderingContext2d>()
             .map_err(|_| JsValue::from_str("Failed to cast context"))?;
-
+    
         self.canvas_context = Some(context);
-        
+    
         Ok(self.to_owned())
     }
 
-    fn update(&mut self) -> Result<(), JsValue>
-    // I need to create a way of update this with fps, ideas on 'broken.rs'
+    pub async fn update(&mut self) -> Result<(), JsValue>
     {
         // set the bg color
         self.get_canvas_context().save();
@@ -102,32 +105,31 @@ impl Game
         Self::set_bg_color(&mut self.clone(), self.background.clone())?;
         // redraw sprites, sprites appears in the second layer
         let v = self.data.clone().into_values().collect();
-        Self::reload_sprites(self, v)?;
+        Self::reload_sprites(self, v).await?; // Adicione .await aqui
         //
         Ok(())
     }
 
-    fn reload_sprites(&mut self, mut vec: Vec<Sprite>) -> Result<(), JsValue>
+    pub async fn reload_sprites(&mut self, vec: Vec<Sprite>) -> Result<(), JsValue>
     {
         if vec.is_empty() {
             return Ok(());
         }
-        //
-        let first = vec.remove(0);
-        // create the sprite
-        let mut sprite = Sprite::new(first);
-        sprite.render()?;
-        //
-        Self::reload_sprites(self, vec)?;
-        //
+    
+        // Process each sprite asynchronously
+        for sprite in vec {
+            let mut sprite = Sprite::new(sprite);
+            sprite.render()?;
+        }
+    
         Ok(())
     }
 
-    pub fn force_update(&mut self) -> Result<Game, JsValue> 
+    pub async fn force_update(&mut self) -> Result<Game, JsValue>
     {
-        Self::update(&mut self.clone())?;
+        Self::update(&mut self.clone()).await?; // Adicione .await aqui
         Ok(self.to_owned())
-    }
+    }    
 
     pub fn get_html_element(&mut self) -> HtmlCanvasElement
     {
@@ -144,21 +146,44 @@ impl Game
         self.window.inner_width().unwrap_or_default().as_f64().unwrap(),
         self.window.inner_height().unwrap_or_default().as_f64().unwrap()
     )}
-    
-    pub fn resize_canvas(&mut self) -> Result<Game, JsValue>
+
+    pub async fn resize_canvas(&mut self) -> Result<Game, JsValue>
     {
         let canvas = Self::get_html_element(self);
         // Get the window proportions
         let (window_width, window_height) = Self::get_window_proportions(self);
+    
+        // Set the desired aspect ratio
+        let aspect_ratio = 16.0 / 9.0;
+        let (new_width, new_height);
+    
+        // Calculate new dimensions while maintaining aspect ratio
+        if window_width / window_height > aspect_ratio {
+            new_width = (window_height * aspect_ratio).min(window_width);
+            new_height = window_height;
+        } else {
+            new_width = window_width;
+            new_height = (window_width / aspect_ratio).min(window_height);
+        }
         
         // Resize the canvas
-        canvas.set_width(window_width as u32);
-        canvas.set_height(window_height as u32);
-
-        Self::update(&mut self.clone())?;
+        canvas.set_width(new_width as u32);
+        canvas.set_height(new_height as u32);
+    
+        // Get the 2D context of the canvas
+        let context = canvas.get_context("2d")?.unwrap();
+        let context_2d = context.dyn_into::<web_sys::CanvasRenderingContext2d>()?;
+    
+        // Fill the canvas background to avoid white bands
+        context_2d.set_fill_style(&JsValue::from_str("black")); // In the future that color will probably have to change...
+        context_2d.fill_rect(0.0, 0.0, new_width, new_height);
+    
+        // Update game after resizing
+        Self::update(&mut self.clone()).await?; // Adicione .await aqui
         //
         Ok(self.to_owned())
     }
+    
 
     pub fn set_bg_color(&mut self, bg_color: String) -> Result<Game, JsValue>
     {
@@ -177,43 +202,43 @@ impl Game
         Ok(self.to_owned())
     }
 
-    pub fn set_bg_image(&mut self, path: String) -> Result<Game, JsValue>
-    {
+    pub async fn set_bg_image(&mut self, path: String) -> Result<Game, JsValue> {
         let context = Self::get_canvas_context(self);
-        //
         let (width, height) = Self::get_window_proportions(self);
-
+    
+        // Create the image
         let image = Rc::new(HtmlImageElement::new().unwrap());
-        let image_clone = image.clone();
-        //
-        image.set_src(&String::from(path.clone()));
-        // some values. This are needed cause the closure requests them
-        let (dx, dy) = ( 
-            width / 2.0,
-            height / 2.0,
-        );
+        image.set_src(&path);
 
-        // Esperar o carregamento da imagem
-        let closure = Closure::wrap(Box::new(move || {
-            // Translate to the center of where the image will be
-            context.translate(dx + width / 2.0, dy + height / 2.0).unwrap();
-            // Draw the image centered at (0, 0)
-            context.draw_image_with_html_image_element_and_dw_and_dh(
-                &image_clone, 
-                -width / 2.0, 
-                -height / 2.0, 
-                width, 
-                height
-            ).unwrap();
-            
-        }) as Box<dyn FnMut()>);
-        //
-        image.set_onload(Some(closure.as_ref().unchecked_ref()));
+        let onload_promise = js_sys::Promise::new(&mut |resolve, reject| {
+            let closure = Closure::wrap(Box::new(move || {
+                resolve.call0(&JsValue::NULL).unwrap();
+            }) as Box<dyn FnMut()>);
+    
+            image.set_onload(Some(closure.as_ref().unchecked_ref()));
+            closure.forget(); // The promise will be resolved when the onload event is fired
+        });
 
+        let future = JsFuture::from(onload_promise);
+    
+        // Wait for the image to load
+        future.await.unwrap();
+    
+        // Once loaded, draw the image  
+        context.translate(width / 2.0, height / 2.0).unwrap();
+        context.draw_image_with_html_image_element_and_dw_and_dh(
+            &image, 
+            -width / 2.0, 
+            -height / 2.0, 
+            width, 
+            height
+        ).unwrap();
+    
+        // Update the background
         self.background = path;
-        //
+    
         Ok(self.to_owned())
-    }
+    }    
 
     pub fn new_image(&mut self, id: String, x: f64, y: f64, path: String, size: Option<f64>, angle: Option<f64>) -> Result<Game, JsValue>
     {
@@ -235,23 +260,55 @@ impl Game
         Ok(self.to_owned())
     }
 
-    pub fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String, size: Option<f64>) -> Result<Game, JsValue>
-    {
+    pub async fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String, size: Option<f64>) -> Result<Game, JsValue> {
         let canvas = (self.get_canvas_context(), self.get_html_element());
-        let kind = Kind::Text( Text { value, color, font });
-        // create sprite
-        let mut sprite = Sprite::new( Sprite {
+        let font_with_size = format!("{}px {}", size.unwrap_or(16.0), font.clone());
+
+        // Load the font using a Fonts API
+        // It allows you to load fonts asynchronously and check if they are available
+        let font_face = format!("{} {}", size.unwrap_or(16.0), font);
+        let load_promise = js_sys::Promise::resolve(&JsValue::from_str(&font_face));
+
+        // Create a closure for then
+        let resolve_closure = Closure::wrap(Box::new(move |_: JsValue| {
+            // Additional logic if necessary - for more customizable texts IDK
+            // Don't return anything, just execute the logic
+        }) as Box<dyn FnMut(JsValue)>);
+
+        // Create a closure for catch
+        let reject_closure = Closure::wrap(Box::new(move |err: JsValue| {
+            // You can add logic to handle errors if necessary
+            // Don't return anything, just execute the logic
+        }) as Box<dyn FnMut(JsValue)>);
+
+        // Use closures with promise
+        load_promise.then(&resolve_closure).catch(&reject_closure);
+
+        // Wait for the font to load
+        let future = JsFuture::from(load_promise);
+        future.await?;
+
+        // Set the font style
+        let context = self.get_canvas_context();
+        context.set_font(&font_with_size);
+        context.set_fill_style(&color.clone().into());
+
+        let kind = Kind::Text(Text { value: value.clone(), color: color.clone(), font: font_with_size.clone() });
+
+        let mut sprite = Sprite::new(Sprite {
             kind,
             pos: (x, y),
             size,
             angle: None,
             canvas
         });
+
         sprite.render()?;
-        //
         self.data.insert(id, sprite);
+
         Ok(self.to_owned())
     }
+
 
     pub fn get_canvas_size(&mut self) -> Vec<u32>
     {
