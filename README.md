@@ -44,6 +44,8 @@ Those are some stuff that I think would be cool to add to this project
 
 I'm not using any library, and this project is in the beginning stage, finishing this can take a long time
 
+[game design](https://github.com/SCLorentz/W2D-library/blob/main/wiki%2Fassets.md)
+
 ## History
 
 I had a problem and needed to delete and create the repo again, so the history of this repo before '11 ago 2024' was deleted, but this affected just one week of progression.
