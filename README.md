@@ -22,17 +22,6 @@ If you want to develop your own version of this game, you should get docker inst
 
 To start the server, use: `run`, this command will make sure that everything necessary to make this project work is being executed and is working correctly.
 
-## Game Aesthetics
-
-- The textures in pixel art style
-- No fancy pause menu, just an ESC key that unpauses the game
-- Score and life info must be in the right bottom corner
-- No fancy physics
-- The jump is very precise and can't be to much or too less
-- The terrain should have some variation, it can't be plain, but it can't have to high a variation
-- The font should be pixelated
-- The dinosaur must have 3 lives, and for each life lost the sprite will blink for 3 seconds
-
 ## Todo
 
 Those are some stuff that I think would be cool to add to this project
