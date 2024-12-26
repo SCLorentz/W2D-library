@@ -13,8 +13,8 @@ impl Sprite
     pub fn new(value: Sprite) -> Self { value }
 
     #[allow(dead_code)]
-    pub fn to_string(&self) -> String {
-        //
+    pub fn to_string(&self) -> String
+    {
         let (x, y) = self.pos;
         match &self.kind {
             Kind::Image(image) => format!("Image {{ texture: {:?}, size: {:?}, x: {}, y: {} }}", image.path, self.size, x, y),
@@ -24,12 +24,15 @@ impl Sprite
 
     pub fn render(&mut self) -> Result<(), JsValue>
     {
-        match &self.kind {
-            Kind::Image(image) => {
+        match &self.kind
+        {
+            Kind::Image(image) =>
+            {
                 Self::create_image(self, image.clone())?;
                 Ok(())
             }
-            Kind::Text(text) => {
+            Kind::Text(text) =>
+            {
                 Self::create_text(self, text.clone())?;
                 Ok(())
             }
@@ -45,7 +48,7 @@ impl Sprite
         // create a new image
         let image = Rc::new(HtmlImageElement::new().unwrap());
         let image_clone = image.clone();
-        //
+
         image.set_src(&String::from(path));
         // some values. This are needed cause the closure requests them
         let (img_h, img_w, dx, dy, size, angle) = ( 

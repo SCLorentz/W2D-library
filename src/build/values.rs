@@ -10,19 +10,22 @@ use std::fmt::{
 };
 
 #[derive(Clone, Debug, Serialize)]
-pub struct Image {
+pub struct Image
+{
     pub path: String,
 }
 
 #[derive(Clone, Serialize)]
-pub struct Text {
+pub struct Text
+{
     pub value: String,
     pub color: String,
     pub font: String,
 }
 
 #[derive(Clone)]
-pub struct Sprite {
+pub struct Sprite
+{
     pub kind: Kind,
     //
     pub pos: (f64, f64),
@@ -33,13 +36,15 @@ pub struct Sprite {
 }
 
 #[derive(Clone, Serialize)]
-pub enum Kind {
+pub enum Kind
+{
     Image(Image),
     Text(Text),
 }
 
 #[derive(Clone, Serialize)]
-pub struct ReturnSprite {
+pub struct ReturnSprite
+{
     pub x: f64,
     pub y: f64,
     pub size: Option<f64>,
@@ -48,7 +53,8 @@ pub struct ReturnSprite {
 }
 
 #[derive(Debug)]
-pub enum ErrorTypes {
+pub enum ErrorTypes
+{
     //EmptyName,
     //DuplicateName,
     //UnexpectedOverwrite,
@@ -56,9 +62,12 @@ pub enum ErrorTypes {
     NoGlobalWindow,
 }
 
-impl Display for ErrorTypes {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match self {
+impl Display for ErrorTypes
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result
+    {
+        match self
+        {
             //ErrorTypes::EmptyName => write!(f, "Name cannot be empty"),
             //ErrorTypes::DuplicateName => write!(f, "Duplicate name found"),
             //ErrorTypes::UnexpectedOverwrite => write!(f, "Unexpected overwrite"),

@@ -1,10 +1,12 @@
-pub fn animate(mut self) {
+pub fn animate(mut self)
+{
     let now = Instant::now();
     let elapsed = now.duration_since(self.last_update);
     let desired_frame_time = Duration::from_secs(1) / self.fps;
     let canvas = self.clone().html_element.unwrap();
 
-    if elapsed >= desired_frame_time {
+    if elapsed >= desired_frame_time
+    {
         self.last_update = now;
 
         // Limpar o canvas e desenhar os elementos

@@ -3,13 +3,9 @@ await init()
 
 const font = new FontFace('MyFont', 'url(/path/to/font.woff2)');
 
-font.load().then(function(loadedFont) {
-    document.fonts.add(loadedFont);
-    console.log('Font loaded!');
-}).catch(function(error) {
-    console.error('Font failed to load:', error);
-});
-
+font.load()
+    .then(font => document.fonts.add(font))
+    .catch(err => console.error('Font failed to load:', err));
 
 const obj = new Game();
 //

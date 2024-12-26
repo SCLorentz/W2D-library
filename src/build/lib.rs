@@ -24,7 +24,8 @@ use sprites::Sprite;
 
 #[wasm_bindgen]
 #[derive(Clone)]
-pub struct Game {
+pub struct Game
+{
     // fps
     fps: u32,
     //last_update: Instant,
@@ -74,7 +75,8 @@ impl Game
     #[wasm_bindgen]
     pub fn inicialize(&mut self) -> Result<Game, JsValue>
     {
-        if self.html_element.is_some() {
+        if self.html_element.is_some()
+        {
             return Ok(self.to_owned());
         }
     
@@ -105,19 +107,21 @@ impl Game
         Self::set_bg_color(&mut self.clone(), self.background.clone())?;
         // redraw sprites, sprites appears in the second layer
         let v = self.data.clone().into_values().collect();
-        Self::reload_sprites(self, v).await?; // Adicione .await aqui
+        Self::reload_sprites(self, v).await?;
         //
         Ok(())
     }
 
     pub async fn reload_sprites(&mut self, vec: Vec<Sprite>) -> Result<(), JsValue>
     {
-        if vec.is_empty() {
+        if vec.is_empty()
+        {
             return Ok(());
         }
     
         // Process each sprite asynchronously
-        for sprite in vec {
+        for sprite in vec
+        {
             let mut sprite = Sprite::new(sprite);
             sprite.render()?;
         }
@@ -127,7 +131,7 @@ impl Game
 
     pub async fn force_update(&mut self) -> Result<Game, JsValue>
     {
-        Self::update(&mut self.clone()).await?; // Adicione .await aqui
+        Self::update(&mut self.clone()).await?;
         Ok(self.to_owned())
     }    
 
@@ -158,10 +162,13 @@ impl Game
         let (new_width, new_height);
     
         // Calculate new dimensions while maintaining aspect ratio
-        if window_width / window_height > aspect_ratio {
+        if window_width / window_height > aspect_ratio
+        {
             new_width = (window_height * aspect_ratio).min(window_width);
             new_height = window_height;
-        } else {
+        }
+        else
+        {
             new_width = window_width;
             new_height = (window_width / aspect_ratio).min(window_height);
         }
@@ -196,13 +203,13 @@ impl Game
 
         // Set a new background color
         context.fill_rect(0.0, 0.0, width, height);
-
         self.background = bg_color;
-        //
+
         Ok(self.to_owned())
     }
 
-    pub async fn set_bg_image(&mut self, path: String) -> Result<Game, JsValue> {
+    pub async fn set_bg_image(&mut self, path: String) -> Result<Game, JsValue>
+    {
         let context = Self::get_canvas_context(self);
         let (width, height) = Self::get_window_proportions(self);
     
@@ -244,7 +251,7 @@ impl Game
     {
         let canvas = (self.get_canvas_context(), self.get_html_element());
         let kind = Kind::Image(Image { path });
-        //
+
         // create sprite
         let mut sprite = Sprite::new( Sprite {
             kind,
@@ -254,13 +261,13 @@ impl Game
             canvas
         });
         sprite.render()?;
-        //
         self.data.insert(id, sprite);
         //
         Ok(self.to_owned())
     }
 
-    pub async fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String, size: Option<f64>) -> Result<Game, JsValue> {
+    pub async fn new_text(&mut self, id: String, x: f64, y: f64, value: String, color: String, font: String, size: Option<f64>) -> Result<Game, JsValue>
+    {
         let canvas = (self.get_canvas_context(), self.get_html_element());
         let font_with_size = format!("{}px {}", size.unwrap_or(16.0), font.clone());
 
@@ -319,10 +326,9 @@ impl Game
 
     pub fn update_sprite_value(&mut self, name: &str, x: f64, y: f64) -> Result<Game, JsValue>
     {
-        // get the sprite
-        if let Some(estrutura) = self.data.get_mut(name) {
+        if let Some(estrutura) = self.data.get_mut(name)
+        {
             //console::log_1(&JsValue::from_str(estrutura.x.to_string().as_str()));
-            //
             estrutura.pos = (x, y);
             return Ok(self.to_owned())
         }

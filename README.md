@@ -5,7 +5,7 @@
 
 By <a href="//commons.wikimedia.org/w/index.php?title=User:Carlosbaraza&action=edit&redlink=1" class="new" title="User:Carlosbaraza (page does not exist)">Carlos Baraza</a> - <span class="int-own-work" lang="en">Own work</span> / <a rel="nofollow" class="external free" href="https://github.com/carlosbaraza/web-assembly-logo">https://github.com/carlosbaraza/web-assembly-logo</a>, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" title="Creative Commons Zero, Public Domain Dedication">CC0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=56494100">Link</a>
 
-<hr>
+---
 Have you ever played the Google Chrome dino game? This is my own version of it, developed in Rust using the WASM (web assembly) technology.
 
 ## Develop by your own
@@ -26,20 +26,11 @@ To start the server, use: `run`, this command will make sure that everything nec
 
 Those are some stuff that I think would be cool to add to this project
 
-* [ ]  Set the start time (day/night) of the game to the equivalent of the user's theme
 * [ ]  Create a grid to prevent impossible situations for the player, making the game playable
 * [ ]  Create a progression difficulty, making the game harder over time
-* [ ]  Create a pause menu accessible with ESC
 * [ ]  Add multiplayer compatibility
-
-<!--* [ ]  Create a ranking system to compare with friends <-- that's cool but I need to review (AI recommendation)-->
-
-* [ ]  Pause the game when the user leaves the page and play a 5-second countdown when the user returns to restart the game, pressing esc on this menu will stop the countdown
 * [ ]  Save the user's progress if they close the page
-* [ ]  Add other dinos to the game
-* [ ]  Create a procedural generation of the world, not only obstacles but the game environment as well
 * [ ]  Add moon cycle, with different sizes and textures
-* [ ]  Add a life system
 * [ ]  Add a God mode, make it contain infinite life, a custom texture for the dinosaur and enable double jump
 
 I'm not using any library, and this project is in the beginning stage, finishing this can take a long time

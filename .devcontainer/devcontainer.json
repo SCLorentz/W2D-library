@@ -1,12 +1,8 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/alpine
 {
 	"name": "Chrome-Dino-Game",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"build": {
         "dockerfile": "Dockerfile"
     },
-    //"image": "Dockerfile",
     "runArgs": [
         "--cap-add=SYS_PTRACE",
         "--security-opt",
@@ -14,10 +10,7 @@
     ],
 	"customizations": {
 		"vscode": {
-			// preinstalled extensions for vscode
 			"extensions": [
-				"eamodio.gitlens",
-				"PKief.material-icon-theme",
 				"kisstkondoros.vscode-gutter-preview",
 				"golang.go",
 				"mhutchie.git-graph",
@@ -25,10 +18,4 @@
 			]
 		}
 	}
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
 }
